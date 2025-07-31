@@ -1,0 +1,23 @@
+{
+  "name": "public_html",
+  "version": "1.0.0",
+  "description": "\"# convertables-frontend\"",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hryh/convertables-frontend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hryh/convertables-frontend/issues"
+  },
+  "homepage": "https://github.com/hryh/convertables-frontend#readme",
+  "dependencies": {
+    "axios": "^1.11.0"
+  }
+}
