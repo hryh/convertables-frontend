@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Convertables - Transfer Spotify to Apple Music</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- Apple MusicKit JS -->
+  <script src="https://js-cdn.music.apple.com/musickit/v1/musickit.js"></script>
+  <script defer src="script.js"></script>
+  <!-- Spotify iFrame API -->
+  <script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
+  <!-- Google AdSense -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9593967146923983"
+     crossorigin="anonymous"></script>
+</head>
+<body>
+  <header>
+    <div class="container header-content">
+      <div>
+        <h1>Convertables</h1>
+        <p>
+          Effortlessly transfer your Spotify playlists to Apple Music.
+          <span class="creator">Created by <a href="https://twitter.com/ryanhoyingho" target="_blank">@ryanhoyingho</a></span>
+        </p>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="instructions">
+      <h2>How it Works</h2>
+      <ol>
+        <li>Log in to your Spotify account and select the playlist you want to transfer.</li>
+        <li>Log in to your Apple Music account.</li>
+        <li>Click "Transfer" and let us do the rest!</li>
+      </ol>
+
+      <!-- Spotify Embed Player Section -->
+      <div id="embed-iframe"></div>
+    </section>
+
+    <section class="actions">
+      <button id="spotify-login-btn" class="btn spotify">Log in with Spotify</button>
+      <button id="apple-music-login-btn" class="btn apple-music">Log in with Apple Music</button>
+      <button id="transfer-btn" class="btn transfer" disabled>Transfer Playlist</button>
+    </section>
+
+    <section id="status">
+      <h2>Status</h2>
+      <p id="status-message">Log in to both accounts to start transferring your playlist.</p>
+    </section>
+
+    <section id="playlists">
+      <h2>Your Spotify Playlists</h2>
+      <div id="playlist-container">
+        <p>No playlists retrieved yet. Log in to Spotify to fetch them.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Add Error Section -->
+  <section id="error-section" style="display: none; color: red; text-align: center;">
+    <h3>Error</h3>
+    <p id="error-message">An error occurred. Please try again.</p>
+  </section>
+
+  <!-- Add Loading Indicator -->
+  <div id="loading-indicator" style="display: none; text-align: center; margin: 20px;">
+    <strong>Loading...</strong>
+  </div><!-- Progress Bar -->
+<div id="progress-container" style="display:none; margin: 20px 0; text-align:center;">
+  <div style="width:100%; background:#eee; border-radius:10px;">
+    <div id="progress-bar" style="width:0%; height:16px; background:#1db954; border-radius:10px; transition:width 0.3s;"></div>
+  </div>
+  <div id="progress-label" style="margin-top:5px; color:#444;"></div>
+</div>
+
+  <footer>
+    <p>&copy; 2025 Convertables. All Rights Reserved.</p>
+  </footer>
+</body>
+</html>

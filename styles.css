@@ -1,0 +1,178 @@
+/* General styles */
+body {
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f9;
+  color: #333;
+}
+
+header {
+  background-color: #1db954;
+  color: white;
+  padding: 20px 0;
+  text-align: center;
+}
+
+.header-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 3rem;
+}
+
+header p {
+  margin: 10px 0;
+  font-size: 1.2rem;
+}
+
+header .creator {
+  font-size: 0.9rem;
+  display: block;
+  margin-top: 5px;
+}
+
+header .creator a {
+  color: #fff;
+  text-decoration: underline;
+}
+
+header .creator a:hover {
+  color: #c9ffc9;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+main {
+  padding: 20px;
+}
+
+.instructions {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.instructions h2 {
+  margin-bottom: 10px;
+}
+
+.instructions ol {
+  padding-left: 20px;
+}
+
+#embed-iframe {
+  margin-top: 20px;
+}
+
+.actions {
+  text-align: center;
+  margin: 30px 0;
+}
+
+.actions .btn {
+  font-size: 1rem;
+  padding: 10px 20px;
+  margin: 10px;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.actions .btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Spotify button */
+.actions .btn.spotify {
+  background: linear-gradient(90deg, #1db954, #1ed760);
+  color: white;
+}
+
+.actions .btn.spotify:hover {
+  background: linear-gradient(90deg, #1ed760, #1db954);
+  transform: scale(1.05);
+}
+
+/* Apple Music button */
+.actions .btn.apple-music {
+  background: linear-gradient(90deg, #fa233b, #ff5c6c);
+  color: white;
+}
+
+.actions .btn.apple-music:hover {
+  background: linear-gradient(90deg, #ff5c6c, #fa233b);
+  transform: scale(1.05);
+}
+
+/* Transfer button */
+.actions .btn.transfer {
+  background: linear-gradient(90deg, #4a90e2, #6fb3f2);
+  color: white;
+}
+
+.actions .btn.transfer:hover {
+  background: linear-gradient(90deg, #6fb3f2, #4a90e2);
+  transform: scale(1.05);
+}
+
+#playlist-container ul {
+  list-style: none;
+  padding: 0;
+}
+
+#playlist-container li {
+  display: flex;
+  align-items: flex-start;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 15px;
+  cursor: pointer;
+}
+
+#playlist-container img {
+  width: 100px;
+  height: 100px;
+  border-radius: 8px;
+  margin-right: 15px;
+}
+
+#playlist-container h3 {
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+#playlist-container h3:hover {
+  color: #1db954;
+}
+
+.track-container {
+  flex: 1;
+  padding-left: 15px;
+  border-left: 1px solid #ddd;
+  display: none;
+}
+
+.track-container ul {
+  list-style: none;
+  padding: 0;
+}
+
+.track-container li {
+  margin-bottom: 10px;
+}
