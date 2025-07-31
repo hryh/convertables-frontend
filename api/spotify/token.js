@@ -1,6 +1,6 @@
-import axios from "axios";
+const axios = require("axios");
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
@@ -37,7 +37,6 @@ export default async function handler(req, res) {
       { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
     );
 
-    // Only send necessary token info to frontend
     res.status(200).json({
       access_token: response.data.access_token,
       refresh_token: response.data.refresh_token,
@@ -51,4 +50,4 @@ export default async function handler(req, res) {
       details: err.response?.data || err.message,
     });
   }
-}
+};
