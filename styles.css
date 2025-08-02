@@ -173,6 +173,16 @@ main {
   padding: 0;
 }
 
+/* --- Improved song title display: full width, wraps, readable --- */
 .track-container li {
   margin-bottom: 10px;
+  background: #fafbfc;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 10px 14px;
+  width: 100%;
+  box-sizing: border-box;
+  word-break: break-word;
+  white-space: normal;
+  font-size: 1rem;
 }
