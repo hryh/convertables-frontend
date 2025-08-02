@@ -45,8 +45,27 @@ const CLIENT_ID = "ed6e006e361743a38c5b94660298ce7a";
 const REDIRECT_URI = "https://convertables.xyz";
 const SCOPES = "playlist-read-private playlist-read-collaborative";
 
-let embedController; // Global variable to store the Spotify Embed Controller
+let embedController = null; // Global variable to store the Spotify Embed Controller
+let embedReady = false; // Track if controller is ready
 let selectedPlaylist = null; // Store selected playlist globally
+
+// Show/hide the Spotify player loading indicator
+function setSpotifyPlayerLoading(isLoading) {
+  let loadingDiv = document.getElementById("spotify-player-loading");
+  if (!loadingDiv) {
+    loadingDiv = document.createElement("div");
+    loadingDiv.id = "spotify-player-loading";
+    loadingDiv.style.textAlign = "center";
+    loadingDiv.style.color = "#1db954";
+    loadingDiv.style.margin = "12px";
+    loadingDiv.textContent = "Spotify player loading...";
+    const embedIframe = document.getElementById("embed-iframe");
+    if (embedIframe) {
+      embedIframe.parentNode.insertBefore(loadingDiv, embedIframe);
+    }
+  }
+  loadingDiv.style.display = isLoading ? "block" : "none";
+}
 
 // Initialize Spotify iFrame API
 window.onSpotifyIframeApiReady = (IFrameAPI) => {
@@ -59,11 +78,24 @@ window.onSpotifyIframeApiReady = (IFrameAPI) => {
 
   const callback = (controller) => {
     embedController = controller; // Store the controller for later use
+    embedReady = true;
+    setSpotifyPlayerLoading(false);
     console.log("Spotify Embed Controller initialized.");
+    // Enable any track buttons waiting for the player
+    enableTrackClicks();
   };
 
+  setSpotifyPlayerLoading(true);
   IFrameAPI.createController(element, options, callback);
 };
+
+// Function to enable track clicks if player is ready
+function enableTrackClicks() {
+  document.querySelectorAll(".track-playable").forEach(li => {
+    li.classList.remove("player-disabled");
+    li.title = "";
+  });
+}
 
 // Function to generate the Spotify authentication URL
 function getSpotifyAuthURL() {
@@ -292,12 +324,11 @@ async function renderPlaylists(playlists) {
           fetchAndRenderTracks(playlist.id, trackContainer);
         }
       }
-      // ========== ADD: Mark this as selected playlist ==========
+      // Mark this as selected playlist
       selectedPlaylist = playlist;
       document.getElementById("status-message").textContent =
         `Selected "${playlist.name}". Ready to transfer! Click Transfer Playlist.`;
       enableTransferButtonIfReady();
-      // ========== END ADD ==========
     });
 
     ul.appendChild(li);
@@ -333,6 +364,7 @@ async function fetchAndRenderTracks(playlistId, trackContainer) {
       const track = trackItem.track;
 
       const li = document.createElement("li");
+      li.classList.add("track-playable");
       li.style.marginBottom = "10px";
 
       const trackName = document.createElement("p");
@@ -341,14 +373,19 @@ async function fetchAndRenderTracks(playlistId, trackContainer) {
         .join(", ")}`;
       li.appendChild(trackName);
 
+      // If player is not ready, disable click and show cursor not-allowed
+      if (!embedReady) {
+        li.classList.add("player-disabled");
+        li.title = "Spotify player is still loading. Please wait.";
+      }
+
       li.addEventListener("click", () => {
-        console.log(`Playing track: ${track.uri}`);
-        if (embedController) {
-          embedController.loadUri(track.uri);
-        } else {
-          console.error("Spotify Embed Controller is not initialized.");
-          alert("Spotify player is not ready yet. Please wait.");
+        if (!embedReady || !embedController) {
+          alert("Spotify player is still loading. Please wait a second and try again.");
+          return;
         }
+        console.log(`Playing track: ${track.uri}`);
+        embedController.loadUri(track.uri);
       });
 
       ul.appendChild(li);
@@ -356,6 +393,8 @@ async function fetchAndRenderTracks(playlistId, trackContainer) {
 
     trackContainer.appendChild(ul);
     trackContainer.dataset.loaded = "true";
+    // Enable clickable tracks if player is now ready
+    if (embedReady) enableTrackClicks();
   } catch (error) {
     console.error("Error fetching tracks:", error);
 

@@ -144,7 +144,6 @@ main {
   padding: 10px;
   margin-bottom: 15px;
   cursor: pointer;
-  /* 让一行内容填满容器 */
   width: 100%;
   box-sizing: border-box;
 }
@@ -172,7 +171,7 @@ main {
   color: #1db954;
 }
 
-/* 让 track-container 撑满剩余空间 */
+/* Make track-container fill remaining space */
 .track-container {
   flex: 1 1 0%;
   min-width: 0;
@@ -199,6 +198,20 @@ main {
   word-break: break-word;
   font-size: 1rem;
   white-space: normal;
+  transition: background 0.2s;
+}
+
+/* Highlight track on hover if enabled */
+.track-container li:not(.player-disabled):hover {
+  background: #e5f5ea;
+  cursor: pointer;
+}
+
+/* Disabled state for tracks when player is not ready */
+.track-playable.player-disabled {
+  opacity: 0.5;
+  cursor: not-allowed !important;
+  pointer-events: none;
 }
 
 .track-container li p {
@@ -207,4 +220,19 @@ main {
   width: 100%;
   white-space: normal;
   word-break: break-word;
+}
+
+/* Spotify player loading message style */
+#spotify-player-loading {
+  font-size: 1rem;
+  color: #1db954;
+  margin: 10px;
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  #playlist-container {
+    max-width: 98vw;
+    padding: 10px 2vw;
+  }
 }
