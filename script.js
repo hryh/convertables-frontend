@@ -260,6 +260,7 @@ async function fetchPlaylists(accessToken) {
 
 // Render playlists on the page
 async function renderPlaylists(playlists) {
+  console.log("renderPlaylists called");
   console.log("Rendering playlists:", playlists);
 
   const container = document.getElementById("playlist-container");
@@ -331,7 +332,10 @@ async function renderPlaylists(playlists) {
 
       // NEW: Show playlist in Spotify widget
       if (embedReady && embedController && playlist.uri) {
+        console.log("Playlist title clicked, loading in widget:", playlist.uri);
         embedController.loadUri(playlist.uri);
+      } else {
+        console.log("Playlist title clicked, but widget not ready:", embedReady, embedController, playlist.uri);
       }
     });
 
@@ -344,6 +348,7 @@ async function renderPlaylists(playlists) {
 
 // Fetch and render tracks for a playlist
 async function fetchAndRenderTracks(playlistId, trackContainer) {
+  console.log("fetchAndRenderTracks called for playlist:", playlistId);
   const loadingMessage = document.createElement("p");
   loadingMessage.textContent = "Loading tracks...";
   trackContainer.appendChild(loadingMessage);
@@ -386,11 +391,11 @@ async function fetchAndRenderTracks(playlistId, trackContainer) {
       }
 
       li.addEventListener("click", () => {
+        console.log("Track row clicked:", track.uri);
         if (!embedReady || !embedController) {
           alert("Spotify player is still loading. Please wait a second and try again.");
           return;
         }
-        console.log(`Playing track: ${track.uri}`);
         embedController.loadUri(track.uri);
       });
 
