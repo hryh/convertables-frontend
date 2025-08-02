@@ -164,7 +164,6 @@ function isTokenExpired() {
 async function refreshAccessToken() {
   const refreshToken = localStorage.getItem("spotifyRefreshToken");
 
-  // Optional: implement /api/spotify/refresh.js on your backend for refresh flow
   try {
     const response = await fetch("/api/spotify/refresh", {
       method: "POST",
@@ -367,10 +366,12 @@ async function fetchAndRenderTracks(playlistId, trackContainer) {
       li.classList.add("track-playable");
       li.style.marginBottom = "10px";
 
+      // Song title and artist in single line, never wrap, scrollable if too long
       const trackName = document.createElement("p");
-      trackName.textContent = `${track.name} by ${track.artists
-        .map((artist) => artist.name)
-        .join(", ")}`;
+      trackName.textContent = `${track.name} by ${track.artists.map((artist) => artist.name).join(", ")}`;
+      trackName.style.whiteSpace = "nowrap";
+      trackName.style.overflowX = "auto";
+      trackName.style.margin = "0";
       li.appendChild(trackName);
 
       // If player is not ready, disable click and show cursor not-allowed

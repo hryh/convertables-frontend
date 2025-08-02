@@ -97,7 +97,6 @@ main {
   cursor: not-allowed;
 }
 
-/* Spotify button */
 .actions .btn.spotify {
   background: linear-gradient(90deg, #1db954, #1ed760);
   color: white;
@@ -108,7 +107,6 @@ main {
   transform: scale(1.05);
 }
 
-/* Apple Music button */
 .actions .btn.apple-music {
   background: linear-gradient(90deg, #fa233b, #ff5c6c);
   color: white;
@@ -119,7 +117,6 @@ main {
   transform: scale(1.05);
 }
 
-/* Transfer button */
 .actions .btn.transfer {
   background: linear-gradient(90deg, #4a90e2, #6fb3f2);
   color: white;
@@ -130,12 +127,25 @@ main {
   transform: scale(1.05);
 }
 
+#playlist-container {
+  max-width: 600px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 3px 16px rgba(0,0,0,0.08);
+  padding: 20px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
 #playlist-container ul {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
+/* Playlist card */
 #playlist-container li {
   display: flex;
   align-items: flex-start;
@@ -146,8 +156,11 @@ main {
   cursor: pointer;
   width: 100%;
   box-sizing: border-box;
+  background: #fafbfc;
+  transition: background 0.2s;
 }
 
+/* Playlist image */
 #playlist-container img {
   width: 100px;
   height: 100px;
@@ -156,6 +169,7 @@ main {
   flex-shrink: 0;
 }
 
+/* Playlist name */
 #playlist-container h3 {
   cursor: pointer;
   transition: color 0.3s ease;
@@ -171,7 +185,7 @@ main {
   color: #1db954;
 }
 
-/* Make track-container fill remaining space */
+/* Track list container */
 .track-container {
   flex: 1 1 0%;
   min-width: 0;
@@ -187,24 +201,26 @@ main {
   width: 100%;
 }
 
-.track-container li {
+.track-playable {
   width: 100%;
-  background: #fafbfc;
+  background: #f8f8f8;
   border: 1px solid #ddd;
   border-radius: 10px;
   margin-bottom: 12px;
   padding: 12px 16px;
   box-sizing: border-box;
-  word-break: break-word;
   font-size: 1rem;
-  white-space: normal;
+  display: flex;
+  align-items: center;
+  word-break: break-all;
+  white-space: nowrap;
+  overflow-x: auto;
   transition: background 0.2s;
+  cursor: pointer;
 }
 
-/* Highlight track on hover if enabled */
-.track-container li:not(.player-disabled):hover {
+.track-playable:hover:not(.player-disabled) {
   background: #e5f5ea;
-  cursor: pointer;
 }
 
 /* Disabled state for tracks when player is not ready */
@@ -214,12 +230,13 @@ main {
   pointer-events: none;
 }
 
-.track-container li p {
+.track-playable p {
   margin: 0;
   font-size: 1rem;
   width: 100%;
-  white-space: normal;
-  word-break: break-word;
+  white-space: nowrap;
+  overflow-x: auto;
+  text-overflow: ellipsis;
 }
 
 /* Spotify player loading message style */
@@ -230,9 +247,18 @@ main {
   text-align: center;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 700px) {
   #playlist-container {
     max-width: 98vw;
     padding: 10px 2vw;
+  }
+  #playlist-container img {
+    width: 70px;
+    height: 70px;
+  }
+  #playlist-container h3 {
+    font-size: 1rem;
+    min-width: 90px;
+    max-width: 140px;
   }
 }
