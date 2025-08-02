@@ -328,6 +328,11 @@ async function renderPlaylists(playlists) {
       document.getElementById("status-message").textContent =
         `Selected "${playlist.name}". Ready to transfer! Click Transfer Playlist.`;
       enableTransferButtonIfReady();
+
+      // NEW: Show playlist in Spotify widget
+      if (embedReady && embedController && playlist.uri) {
+        embedController.loadUri(playlist.uri);
+      }
     });
 
     ul.appendChild(li);
