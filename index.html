@@ -13,8 +13,73 @@
   <!-- Google AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9593967146923983"
      crossorigin="anonymous"></script>
+  <style>
+    /* Sticky progress bar at the top */
+    #progress-container {
+      display: none;
+      position: sticky;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: #fff;
+      z-index: 1001;
+      margin: 0;
+      padding: 8px 0 4px 0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      text-align: center;
+    }
+    #progress-container > div:first-child {
+      width: 90%;
+      margin: 0 auto;
+      background: #eee;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    #progress-bar {
+      width: 0%;
+      height: 16px;
+      background: #1db954;
+      border-radius: 10px;
+      transition: width 0.3s;
+    }
+    #progress-label {
+      margin-top: 5px;
+      color: #444;
+    }
+    /* Card style for playlist container */
+    #playlist-container {
+      max-width: 480px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 3px 16px rgba(0,0,0,0.08);
+      padding: 20px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    #playlist-container ul {
+      padding: 0;
+    }
+    @media (max-width: 600px) {
+      #playlist-container {
+        max-width: 98vw;
+        padding: 10px 2vw;
+      }
+      #progress-container > div:first-child {
+        width: 98vw;
+      }
+    }
+  </style>
 </head>
 <body>
+  <!-- Progress Bar at the top -->
+  <div id="progress-container">
+    <div>
+      <div id="progress-bar"></div>
+    </div>
+    <div id="progress-label"></div>
+  </div>
   <header>
     <div class="container header-content">
       <div>
@@ -68,13 +133,7 @@
   <!-- Add Loading Indicator -->
   <div id="loading-indicator" style="display: none; text-align: center; margin: 20px;">
     <strong>Loading...</strong>
-  </div><!-- Progress Bar -->
-<div id="progress-container" style="display:none; margin: 20px 0; text-align:center;">
-  <div style="width:100%; background:#eee; border-radius:10px;">
-    <div id="progress-bar" style="width:0%; height:16px; background:#1db954; border-radius:10px; transition:width 0.3s;"></div>
   </div>
-  <div id="progress-label" style="margin-top:5px; color:#444;"></div>
-</div>
 
   <footer>
     <p>&copy; 2025 Convertables. All Rights Reserved.</p>
