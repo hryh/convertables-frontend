@@ -5,27 +5,69 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Convertables - Transfer Spotify to Apple Music</title>
   <link rel="stylesheet" href="styles.css">
-  <!-- Apple MusicKit JS -->
-  <script src="https://js-cdn.music.apple.com/musickit/v1/musickit.js"></script>
-  <script defer src="script.js"></script>
-  <!-- Spotify iFrame API -->
-  <script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
-  <!-- Google AdSense -->
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9593967146923983"
-     crossorigin="anonymous"></script>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <style>
+    /* Sticky progress bar at the top */
+    #progress-container {
+      display: none;
+      position: sticky;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: #fff;
+      z-index: 1001;
+      margin: 0;
+      padding: 8px 0 4px 0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      text-align: center;
+    }
+    #progress-container > div:first-child {
+      width: 90%;
+      margin: 0 auto;
+      background: #eee;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    #progress-bar {
+      width: 0%;
+      height: 16px;
+      background: #1db954;
+      border-radius: 10px;
+      transition: width 0.3s;
+    }
+    #progress-label {
+      margin-top: 5px;
+      color: #444;
+    }
+    @media (max-width: 600px) {
+      #progress-container > div:first-child {
+        width: 98vw;
+      }
+    }
+  </style>
 </head>
 <body>
+  <!-- Progress Bar at the top -->
+  <div id="progress-container">
+    <div>
+      <div id="progress-bar"></div>
+    </div>
+    <div id="progress-label"></div>
+  </div>
   <header>
     <div class="banner">
       <img src="images/banner.jpg" alt="Convertables - Transfers Spotify playlists to Apple Music free">
     </div>
     <div class="container header-content">
       <div>
+        <!-- Removed:
         <h1>Convertables</h1>
         <p>
           Effortlessly transfer your Spotify playlists to Apple Music.
           <span class="creator">Created by <a href="https://twitter.com/ryanhoyingho" target="_blank">@ryanhoyingho</a></span>
         </p>
+        -->
+        <span class="creator">Created by <a href="https://twitter.com/ryanhoyingho" target="_blank">@ryanhoyingho</a></span>
       </div>
     </div>
   </header>
@@ -38,7 +80,6 @@
         <li>Log in to your Apple Music account.</li>
         <li>Click "Transfer" and let us do the rest!</li>
       </ol>
-
       <!-- Spotify Embed Player Section -->
       <div id="embed-iframe"></div>
     </section>
@@ -72,16 +113,16 @@
   <div id="loading-indicator" style="display: none; text-align: center; margin: 20px;">
     <strong>Loading...</strong>
   </div>
-  <!-- Progress Bar -->
-  <div id="progress-container" style="display:none; margin: 20px 0; text-align:center;">
-    <div style="width:100%; background:#eee; border-radius:10px;">
-      <div id="progress-bar" style="width:0%; height:16px; background:#1db954; border-radius:10px; transition:width 0.3s;"></div>
-    </div>
-    <div id="progress-label" style="margin-top:5px; color:#444;"></div>
-  </div>
 
   <footer>
     <p>&copy; 2025 Convertables. All Rights Reserved.</p>
   </footer>
+
+  <!-- Scripts at the end to ensure DOM is loaded -->
+  <script src="https://js-cdn.music.apple.com/musickit/v1/musickit.js"></script>
+  <script src="https://open.spotify.com/embed/iframe-api/v1"></script>
+  <script src="script.js"></script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9593967146923983"
+     crossorigin="anonymous"></script>
 </body>
 </html>
