@@ -46,6 +46,72 @@ header {
   letter-spacing: 2px;
 }
 
+/* How it Works Steps */
+.steps-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 32px;
+  margin-top: 28px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.step-box {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 4px 20px rgba(30,40,60,0.10);
+  text-align: center;
+  padding: 28px 20px 22px 20px;
+  flex: 1 1 220px;
+  max-width: 260px;
+  min-width: 180px;
+  transition: box-shadow .18s cubic-bezier(.4,0,.2,1), transform .18s cubic-bezier(.4,0,.2,1);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.step-box:hover {
+  box-shadow: 0 8px 28px rgba(30,185,84,0.13);
+  transform: translateY(-4px) scale(1.03);
+}
+
+.step-icon {
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.step-box h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  margin-top: 0;
+  color: #222;
+  letter-spacing: 1px;
+}
+
+.step-box p {
+  font-size: 1.07rem;
+  color: #444;
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .steps-container {
+    flex-direction: column;
+    gap: 18px;
+    align-items: stretch;
+  }
+  .step-box {
+    max-width: 100%;
+    width: 100%;
+  }
+}
+
 /* Main content */
 main {
   max-width: 900px;
