@@ -129,15 +129,16 @@ main {
   vertical-align: middle;
 }
 
-/* Playlist cards */
+/* Playlist cards - now stacked vertically */
 .playlist-section ul {
   list-style: none;
   margin: 0;
   padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: 24px;
 }
+
 .playlist-card {
   background: #fff;
   border-radius: 14px;
@@ -247,7 +248,6 @@ footer {
     padding: 18px 5vw;
   }
   .playlist-section ul {
-    grid-template-columns: 1fr;
     gap: 15px;
   }
 }
