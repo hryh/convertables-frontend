@@ -8,7 +8,6 @@
   --radius: 18px;
   --transition: 0.16s cubic-bezier(.4,0,.2,1);
 }
-
 html, body {
   margin: 0;
   padding: 0;
@@ -18,34 +17,29 @@ html, body {
   color: #19202a;
   min-height: 100vh;
 }
-
 /* Simple Header */
 header {
   background: #111;
   box-shadow: 0 2px 8px rgba(30,40,60,0.10);
 }
-
 .simple-header {
   display: flex;
   align-items: center;
   height: 64px;
   padding: 0 24px;
 }
-
 .header-logo {
   height: 36px;
   width: 36px;
   margin-right: 16px;
   display: inline-block;
 }
-
 .header-title {
   color: #fff;
   font-size: 1.7rem;
   font-weight: 700;
   letter-spacing: 2px;
 }
-
 /* How it Works Steps */
 .steps-container {
   display: flex;
@@ -56,7 +50,6 @@ header {
   margin-bottom: 8px;
   flex-wrap: wrap;
 }
-
 .step-box {
   background: #fff;
   border-radius: 18px;
@@ -72,19 +65,16 @@ header {
   flex-direction: column;
   align-items: center;
 }
-
 .step-box:hover {
   box-shadow: 0 8px 28px rgba(30,185,84,0.13);
   transform: translateY(-4px) scale(1.03);
 }
-
 .step-icon {
   margin-bottom: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-
 .step-icon img {
   width: 48px;
   height: 48px;
@@ -94,7 +84,6 @@ header {
   background: #f5f5f5;
   display: block;
 }
-
 .step-box h3 {
   font-size: 1.25rem;
   font-weight: 700;
@@ -103,13 +92,11 @@ header {
   color: #222;
   letter-spacing: 1px;
 }
-
 .step-box p {
   font-size: 1.07rem;
   color: #444;
   margin: 0;
 }
-
 @media (max-width: 900px) {
   .steps-container {
     flex-direction: column;
@@ -121,15 +108,13 @@ header {
     width: 100%;
   }
 }
-
 /* Main content */
 main {
   max-width: 900px;
   margin: 0 auto;
   padding: 36px 20px 30px 20px;
 }
-
-.instructions, .actions, .status-section, .playlist-section {
+.instructions, .actions, .status-section, .playlist-section, .history-section {
   background: var(--card-bg);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
@@ -137,21 +122,18 @@ main {
   padding: 30px 28px;
   transition: box-shadow var(--transition);
 }
-
-.instructions h2, .playlist-section h2, .status-section h2 {
+.instructions h2, .playlist-section h2, .status-section h2, .history-section h2 {
   font-size: 1.38rem;
   letter-spacing: -0.02em;
   margin-bottom: 10px;
   font-weight: 700;
 }
-
 .instructions ol {
   padding-left: 22px;
   margin-top: 0;
   margin-bottom: 10px;
   font-size: 1.06rem;
 }
-
 /* Buttons */
 .btn {
   display: inline-flex;
@@ -204,7 +186,6 @@ main {
   display: inline-block;
   vertical-align: middle;
 }
-
 /* Playlist cards - now stacked vertically */
 .playlist-section ul {
   list-style: none;
@@ -214,7 +195,6 @@ main {
   flex-direction: column;
   gap: 24px;
 }
-
 .playlist-card {
   background: #fff;
   border-radius: 14px;
@@ -252,7 +232,6 @@ main {
   color: #888;
   margin-bottom: 0;
 }
-
 /* Status */
 .status-section {
   display: flex;
@@ -265,7 +244,6 @@ main {
   margin-top: 8px;
   opacity: 0.85;
 }
-
 /* Progress Bar */
 .progress-bar-wrap {
   width: 100%;
@@ -290,7 +268,61 @@ main {
   font-weight: 600;
   letter-spacing: 0.01em;
 }
-
+/* Track Selector styles */
+#track-selector-section {
+  margin-top: 20px;
+}
+#track-selector-section ul {
+  list-style: none;
+  padding-left: 0;
+}
+#track-selector-section li {
+  margin: 6px 0;
+  font-size: 1.06rem;
+  display: flex;
+  align-items: center;
+}
+.track-box {
+  margin-right: 8px;
+}
+#select-all {
+  margin-right: 8px;
+}
+/* Transfer History */
+.history-section {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 30px;
+  padding: 30px 28px;
+}
+.history-entry {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border-bottom: 1px solid #eee;
+  padding: 10px 0;
+}
+.history-playlist {
+  font-weight: 600;
+}
+.history-date {
+  color: #888;
+  font-size: 0.98em;
+}
+.history-status.success {
+  color: #1db954;
+  font-weight: 600;
+}
+.history-status.fail {
+  color: #fa233b;
+  font-weight: 600;
+}
+.history-view {
+  color: #4a90e2;
+  text-decoration: underline;
+  margin-left: auto;
+}
 /* Footer */
 footer {
   text-align: center;
@@ -301,7 +333,6 @@ footer {
   padding-bottom: 20px;
   opacity: 0.8;
 }
-
 /* Responsive */
 @media (max-width: 600px) {
   .simple-header {
@@ -320,7 +351,7 @@ footer {
   main {
     padding: 18px 5vw 16px 5vw;
   }
-  .instructions, .actions, .status-section, .playlist-section {
+  .instructions, .actions, .status-section, .playlist-section, .history-section {
     padding: 18px 5vw;
   }
   .playlist-section ul {

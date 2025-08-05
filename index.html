@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Convertables - Transfer Spotify to Apple Music</title>
   <link rel="stylesheet" href="styles.css">
-  
   <!-- Favicon and related meta tags -->
   <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -13,7 +12,6 @@
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
   <meta name="apple-mobile-web-app-title" content="Convertables" />
   <link rel="manifest" href="/site.webmanifest" />
-
   <style>
     /* Sticky progress bar at the top */
     #progress-container {
@@ -116,15 +114,33 @@
         <p>No playlists retrieved yet. Log in to Spotify to fetch them.</p>
       </div>
     </section>
+
+    <!-- NEW: Partial Transfer Track Selector -->
+    <section id="track-selector-section" class="playlist-section" style="display:none;">
+      <h2>Select Tracks to Transfer</h2>
+      <label style="margin-bottom:16px;display:block;">
+        <input type="checkbox" id="select-all" checked>
+        <strong>Select All</strong>
+      </label>
+      <ul id="track-list"></ul>
+    </section>
+
+    <!-- NEW: Transfer History -->
+    <section id="history-section" class="history-section">
+      <h2>Transfer History</h2>
+      <div id="history-container">
+        <p>No transfer history yet.</p>
+      </div>
+    </section>
   </main>
 
-  <!-- Add Error Section -->
+  <!-- Error Section -->
   <section id="error-section" style="display: none; color: red; text-align: center;">
     <h3>Error</h3>
     <p id="error-message">An error occurred. Please try again.</p>
   </section>
 
-  <!-- Add Loading Indicator -->
+  <!-- Loading Indicator -->
   <div id="loading-indicator" style="display: none; text-align: center; margin: 20px;">
     <strong>Loading...</strong>
   </div>
