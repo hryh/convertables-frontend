@@ -85,6 +85,16 @@ header {
   justify-content: center;
 }
 
+.step-icon img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.09);
+  background: #f5f5f5;
+  display: block;
+}
+
 .step-box h3 {
   font-size: 1.25rem;
   font-weight: 700;
