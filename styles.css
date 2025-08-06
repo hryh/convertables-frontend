@@ -268,6 +268,29 @@ main {
   font-weight: 600;
   letter-spacing: 0.01em;
 }
+/* FLEX LAYOUT FOR PLAYLIST & TRACK SELECTOR */
+.playlist-track-flex {
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+  width: 100%;
+  margin-bottom: 32px;
+}
+@media (max-width: 900px) {
+  .playlist-track-flex {
+    flex-direction: column;
+    gap: 18px;
+  }
+}
+#playlists.playlist-section {
+  flex: 1 1 300px;
+  max-width: 350px;
+  min-width: 220px;
+}
+#track-selector-section.playlist-section {
+  flex: 2 1 0;
+  min-width: 0;
+}
 /* Track Selector styles */
 #track-selector-section {
   margin-top: 20px;
@@ -275,6 +298,7 @@ main {
 #track-selector-section ul {
   list-style: none;
   padding-left: 0;
+  margin: 0;
 }
 #track-selector-section li {
   margin: 6px 0;
