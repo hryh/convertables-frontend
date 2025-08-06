@@ -51,21 +51,118 @@
         width: 98vw;
       }
     }
+
+    /* Corner menu styling */
+    .corner-menu {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      background: rgba(255,255,255,0.97);
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.09);
+      z-index: 2000;
+      padding: 12px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 1rem;
+      transition: box-shadow 0.2s;
+      border: 1px solid #eee;
+    }
+    .corner-menu a {
+      color: #222;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .corner-menu a:hover {
+      color: #1db954;
+      text-decoration: underline;
+    }
+    @media (max-width: 600px) {
+      .corner-menu {
+        right: 4px;
+        top: 4px;
+        font-size: 0.96rem;
+        padding: 7px 10px;
+      }
+    }
+
+    /* Header logo links */
+    .header-logos {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .header-logo-link img {
+      height: 38px;
+      width: 38px;
+      object-fit: contain;
+      vertical-align: middle;
+      transition: transform 0.15s;
+      border-radius: 20%;
+      background: #fff;
+    }
+    .header-logo-link:hover img {
+      transform: scale(1.08) rotate(-5deg);
+      filter: brightness(1.1);
+    }
+    .header-title {
+      font-size: 1.28rem;
+      font-weight: bold;
+      letter-spacing: 2px;
+      margin-left: 10px;
+      color: #222;
+      vertical-align: middle;
+    }
+    .simple-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: #111;
+      padding: 14px 18px;
+      min-height: 56px;
+    }
+    @media (max-width: 600px) {
+      .header-title {
+        font-size: 1rem;
+        margin-left: 6px;
+      }
+      .simple-header {
+        padding: 10px 7px;
+        gap: 8px;
+      }
+      .header-logo-link img {
+        height: 30px;
+        width: 30px;
+      }
+    }
   </style>
 </head>
 <body>
-  <!-- Progress Bar at the top -->
-  <div id="progress-container">
-    <div>
-      <div id="progress-bar"></div>
-    </div>
-    <div id="progress-label"></div>
-  </div>
+  <!-- Corner menu -->
+  <nav class="corner-menu" aria-label="Site quick links">
+    <a href="/tos.html" target="_blank" rel="noopener">Terms of Service</a>
+    <a href="/contact.html" target="_blank" rel="noopener">Contact / Support</a>
+  </nav>
 
-  <!-- Simple Black Header -->
+  <!-- Simple Black Header with clickable logos -->
   <header>
     <div class="simple-header">
-      <img src="images/logo.png" alt="Convertables Logo" class="header-logo">
+      <div class="header-logos">
+        <!-- Main app logo: goes to homepage -->
+        <a href="/" class="header-logo-link" title="Convertables Home">
+          <img src="images/logo.png" alt="Convertables Logo">
+        </a>
+        <!-- GitHub logo (PNG) -->
+        <a href="https://github.com/hryh/public-convertables" class="header-logo-link" title="GitHub" target="_blank" rel="noopener">
+          <img src="images/github-mark-white.png" alt="GitHub">
+        </a>
+        <!-- Instagram logo (PNG) -->
+        <a href="https://www.instagram.com/convert.ables/" class="header-logo-link" title="Instagram" target="_blank" rel="noopener">
+          <img src="images/instagram-svgrepo-com.png" alt="Instagram">
+        </a>
+      </div>
       <span class="header-title">CONVERTABLES</span>
     </div>
   </header>
