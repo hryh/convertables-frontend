@@ -34,13 +34,15 @@ header {
   margin-right: 16px;
   display: inline-block;
 }
-/* UPDATED HEADER TITLE STYLES */
+/* THE CORRECT HEADER TITLE STYLE */
 .header-title {
   color: #fff;
-  font-size: 2.1rem;      /* Larger font */
+  font-size: 2.1rem;
   font-weight: 700;
-  letter-spacing: 0;      /* No extra space between letters */
+  letter-spacing: 0;
   text-transform: uppercase;
+  margin-left: 10px;
+  vertical-align: middle;
 }
 @media (max-width: 600px) {
   .simple-header {
@@ -53,8 +55,9 @@ header {
     margin-right: 10px;
   }
   .header-title {
-    font-size: 1.25rem;   /* Larger font on mobile too */
-    letter-spacing: 0;    /* No extra space on mobile */
+    font-size: 1.25rem;
+    letter-spacing: 0;
+    margin-left: 6px;
   }
   main {
     padding: 18px 5vw 16px 5vw;
