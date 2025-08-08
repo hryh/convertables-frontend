@@ -5,14 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Convertables - Transfer Spotify to Apple Music</title>
   <meta name="description" content="Seamlessly transfer Spotify playlists to Apple Music with Convertables. Simple, fast, and free music migration.">
+  <meta name="apple-mobile-web-app-title" content="Convertables" />
+  <!-- Optional: safer Apple developer token injection (preferred over hardcoding) -->
+  <!-- <meta name="apple-developer-token" content="YOUR_SERVER_MINTED_DEVELOPER_TOKEN"> -->
+
   <link rel="stylesheet" href="styles.css">
-  <!-- Favicon and related meta tags -->
+  <!-- Favicons -->
   <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="shortcut icon" href="/favicon.ico" />
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-  <meta name="apple-mobile-web-app-title" content="Convertables" />
   <link rel="manifest" href="/site.webmanifest" />
+
   <style>
     /* Sticky progress bar at the top */
     #progress-container {
@@ -24,7 +28,7 @@
       background: #fff;
       z-index: 1001;
       margin: 0;
-      padding: 8px 0 4px 0;
+      padding: 8px 0 6px 0;
       box-shadow: 0 2px 8px rgba(0,0,0,0.05);
       text-align: center;
     }
@@ -129,6 +133,12 @@
   </style>
 </head>
 <body>
+  <!-- Sticky Progress -->
+  <div id="progress-container" role="status" aria-live="polite">
+    <div><div id="progress-bar"></div></div>
+    <div id="progress-label">Preparing…</div>
+  </div>
+
   <!-- Corner menu -->
   <nav class="corner-menu" aria-label="Site quick links">
     <a href="/tos.html" target="_blank" rel="noopener">Terms of Service</a>
@@ -139,15 +149,12 @@
   <header>
     <div class="simple-header">
       <div class="header-logos">
-        <!-- Main app logo: goes to homepage -->
         <a href="/" class="header-logo-link" title="Convertables Home">
           <img src="images/logo.png" alt="Convertables Logo">
         </a>
-        <!-- GitHub logo (PNG) -->
         <a href="https://github.com/hryh/public-convertables" class="header-logo-link" title="GitHub" target="_blank" rel="noopener">
           <img src="images/github-mark-white.png" alt="GitHub">
         </a>
-        <!-- Instagram logo (PNG) -->
         <a href="https://www.instagram.com/convert.ables/" class="header-logo-link" title="Instagram" target="_blank" rel="noopener">
           <img src="images/instagram-svgrepo-com.png" alt="Instagram">
         </a>
@@ -157,6 +164,35 @@
   </header>
 
   <main>
+    <!-- Hero / Value prop -->
+    <section class="status-section" style="margin-top:14px;">
+      <h1 style="margin:0;font-size:1.6rem;">Move your playlists from Spotify to Apple Music in minutes</h1>
+      <p class="status-message" id="status-message" aria-live="polite">
+        Log in to both accounts, pick a playlist, select tracks, and click Transfer.
+      </p>
+
+      <!-- Wizard/Stepper -->
+      <div class="stepper" aria-label="Transfer steps">
+        <div class="step active" id="step-1" data-step="1">
+          Connect Spotify
+          <small>Load your playlists</small>
+        </div>
+        <div class="step" id="step-2" data-step="2">
+          Choose playlist
+          <small>Optionally pick tracks</small>
+        </div>
+        <div class="step" id="step-3" data-step="3">
+          Connect Apple Music
+          <small>Authorize once</small>
+        </div>
+        <div class="step" id="step-4" data-step="4">
+          Transfer
+          <small>Create and fill playlist</small>
+        </div>
+      </div>
+    </section>
+
+    <!-- How it works (visual) -->
     <section class="instructions">
       <h2>How it Works</h2>
       <div class="steps-container">
@@ -184,26 +220,31 @@
       </div>
     </section>
 
-    <section class="actions">
-      <button id="spotify-login-btn" class="btn spotify">Log in with Spotify</button>
-      <button id="apple-music-login-btn" class="btn apple-music">Log in with Apple Music</button>
-      <button id="transfer-btn" class="btn transfer" disabled>Transfer Playlist</button>
+    <!-- Actions -->
+    <section class="actions" aria-label="Account connections and transfer">
+      <button id="spotify-login-btn" class="btn spotify" aria-label="Log in with Spotify">Log in with Spotify</button>
+      <button id="apple-music-login-btn" class="btn apple-music" aria-label="Log in with Apple Music">Log in with Apple Music</button>
+      <button id="transfer-btn" class="btn transfer" disabled aria-disabled="true">Transfer Playlist</button>
+      <p class="info-note">
+        We never see your passwords. OAuth only. You can revoke access anytime in your Spotify and Apple account settings.
+        Not affiliated with Spotify or Apple.
+      </p>
     </section>
 
-    <section id="status" class="status-section">
-      <h2>Status</h2>
-      <p id="status-message">Log in to both accounts to start transferring your playlist.</p>
-    </section>
-
-    <!-- FLEX CONTAINER FOR PLAYLISTS AND TRACK SELECTOR -->
+    <!-- FLEX: Playlists + Track selector -->
     <div class="playlist-track-flex">
-      <section id="playlists" class="playlist-section">
+      <section id="playlists" class="playlist-section" aria-label="Your Spotify Playlists">
         <h2>Your Spotify Playlists</h2>
+        <div class="playlist-filter">
+          <label for="playlist-search" class="sr-only">Search playlists</label>
+          <input id="playlist-search" type="search" placeholder="Search playlists..." inputmode="search" autocomplete="off">
+        </div>
         <div id="playlist-container">
           <p>No playlists retrieved yet. Log in to Spotify to fetch them.</p>
         </div>
       </section>
-      <section id="track-selector-section" class="playlist-section" style="display:none;">
+
+      <section id="track-selector-section" class="playlist-section" style="display:none;" aria-label="Select tracks">
         <h2>Select Tracks to Transfer</h2>
         <label style="margin-bottom:16px;display:block;">
           <input type="checkbox" id="select-all" checked>
@@ -213,7 +254,7 @@
       </section>
     </div>
 
-    <section id="history-section" class="history-section">
+    <section id="history-section" class="history-section" aria-label="Transfer history">
       <h2>Transfer History</h2>
       <div id="history-container">
         <p>No transfer history yet.</p>
@@ -222,7 +263,7 @@
   </main>
 
   <!-- Error Section -->
-  <section id="error-section" style="display: none; color: red; text-align: center;">
+  <section id="error-section" style="display: none; color: #b00020; text-align: center;" aria-live="polite">
     <h3>Error</h3>
     <p id="error-message">An error occurred. Please try again.</p>
   </section>
@@ -238,9 +279,7 @@
 
   <!-- Scripts at the end to ensure DOM is loaded -->
   <script src="https://js-cdn.music.apple.com/musickit/v1/musickit.js"></script>
-  <script src="https://open.spotify.com/embed/iframe-api/v1"></script>
   <script src="script.js"></script>
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9593967146923983"
-     crossorigin="anonymous"></script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9593967146923983" crossorigin="anonymous"></script>
 </body>
 </html>
