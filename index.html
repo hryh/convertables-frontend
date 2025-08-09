@@ -6,9 +6,6 @@
   <title>Convertables - Transfer Spotify to Apple Music</title>
   <meta name="description" content="Seamlessly transfer Spotify playlists to Apple Music with Convertables. Simple, fast, and free music migration.">
   <meta name="apple-mobile-web-app-title" content="Convertables" />
-  <!-- Optional: inject a server-minted Apple developer token -->
-  <!-- <meta name="apple-developer-token" content="YOUR_DEVELOPER_TOKEN"> -->
-
   <link rel="stylesheet" href="styles.css">
   <!-- Favicons -->
   <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
@@ -16,7 +13,6 @@
   <link rel="shortcut icon" href="/favicon.ico" />
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
   <link rel="manifest" href="/site.webmanifest" />
-
   <style>
     /* Sticky progress bar at the top */
     #progress-container {
@@ -73,13 +69,23 @@
       transition: box-shadow 0.2s;
       border: 1px solid #eee;
     }
-    .corner-menu a {
+    .corner-menu a,
+    .corner-menu button {
       color: #222;
-      text-decoration: none;
+      background: none;
+      border: none;
+      font: inherit;
       font-weight: 500;
+      text-align: left;
+      padding: 0;
+      cursor: pointer;
       transition: color 0.2s;
+      text-decoration: none;
+      outline: none;
     }
-    .corner-menu a:hover {
+    .corner-menu a:hover,
+    .corner-menu button:hover,
+    .corner-menu button:focus {
       color: #1db954;
       text-decoration: underline;
     }
@@ -129,6 +135,62 @@
         width: 30px;
       }
     }
+
+    /* Contact Modal Styles */
+    .contact-modal {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(30,40,60,0.35);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 3000;
+    }
+    .contact-modal-content {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.17);
+      padding: 34px 22px 26px 22px;
+      max-width: 380px;
+      width: 93vw;
+      position: relative;
+      animation: popin .24s cubic-bezier(.4,0,.2,1);
+    }
+    @keyframes popin {from{transform:scale(.92);opacity:0}to{transform:scale(1);opacity:1}}
+    .contact-modal-content h2 {
+      margin-top: 0; margin-bottom: 16px;
+      font-size: 1.34rem;
+      font-weight: 700;
+    }
+    .contact-modal-content label {
+      display: block; font-weight: 600; margin: 14px 0 5px 0;
+    }
+    .contact-modal-content input, .contact-modal-content textarea {
+      width: 100%; border-radius: 8px; border: 1px solid #ccc;
+      font-size: 1.05rem; padding: 8px; margin-bottom: 8px;
+    }
+    .contact-modal-content button[type="submit"] {
+      display: block; margin: 14px auto 0 auto;
+    }
+    .contact-close {
+      position: absolute; top: 13px; right: 16px; font-size: 2.2rem; font-weight: 400; color: #aaa; cursor: pointer;
+      transition: color .15s;
+    }
+    .contact-close:hover { color: #fa233b; }
+    .contact-btn {
+      background: linear-gradient(90deg,#4a90e2,#6fb3f2);
+      color: #fff;
+      border: none;
+      border-radius: 40px;
+      font-weight: 600;
+      padding: 10px 28px;
+      cursor: pointer;
+      transition: background 0.18s, box-shadow 0.18s;
+      box-shadow: 0 2px 9px rgba(74,144,226,0.13);
+      font-size: 1.07rem;
+    }
+    .contact-btn:active, .contact-btn:focus {
+      background: linear-gradient(90deg,#357ab7,#4a90e2);
+      outline: none;
+    }
   </style>
 </head>
 <body>
@@ -141,8 +203,27 @@
   <!-- Corner menu -->
   <nav class="corner-menu" aria-label="Site quick links">
     <a href="/tos.html" target="_blank" rel="noopener">Terms of Service</a>
-    <a href="/contact.html" target="_blank" rel="noopener">Contact / Support</a>
+    <button class="contact-btn" id="contact-support-btn" type="button">Contact / Support</button>
   </nav>
+
+  <!-- Contact Modal -->
+  <div id="contact-modal" class="contact-modal" style="display:none;">
+    <div class="contact-modal-content">
+      <span class="contact-close" id="contact-close">&times;</span>
+      <h2>Contact / Support</h2>
+      <form id="contact-form">
+        <label for="contact-email">Your Email:</label>
+        <input type="email" id="contact-email" name="email" required placeholder="you@example.com">
+        <label for="contact-message">Message:</label>
+        <textarea id="contact-message" name="message" rows="5" required placeholder="Type your message here..."></textarea>
+        <button type="submit" class="btn transfer">Send Email</button>
+      </form>
+      <div id="contact-success" style="display:none; color: #1db954; margin-top:12px;">
+        Thank you! Your email app should open now.<br>
+        If not, please send your message to <b>ryan@convertables.xyz</b>
+      </div>
+    </div>
+  </div>
 
   <!-- Header -->
   <header>
@@ -279,5 +360,33 @@
   <script src="https://js-cdn.music.apple.com/musickit/v1/musickit.js"></script>
   <script src="script.js"></script>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9593967146923983" crossorigin="anonymous"></script>
+  <script>
+    // Contact Modal JS
+    document.getElementById('contact-support-btn').onclick = function() {
+      document.getElementById('contact-modal').style.display = 'flex';
+      document.getElementById('contact-success').style.display = 'none';
+      document.getElementById('contact-form').style.display = 'block';
+      document.getElementById('contact-form').reset();
+    };
+    document.getElementById('contact-close').onclick = function() {
+      document.getElementById('contact-modal').style.display = 'none';
+    };
+    window.onclick = function(event) {
+      if (event.target === document.getElementById('contact-modal')) {
+        document.getElementById('contact-modal').style.display = 'none';
+      }
+    };
+    document.getElementById('contact-form').onsubmit = function(e) {
+      e.preventDefault();
+      var email = document.getElementById('contact-email').value;
+      var message = document.getElementById('contact-message').value;
+      var subject = encodeURIComponent('Convertables Support Request');
+      var body = encodeURIComponent("From: " + email + "\n\n" + message);
+      var mailto = "mailto:ryan@convertables.xyz?subject=" + subject + "&body=" + body;
+      window.location.href = mailto;
+      document.getElementById('contact-form').style.display = 'none';
+      document.getElementById('contact-success').style.display = 'block';
+    };
+  </script>
 </body>
 </html>
