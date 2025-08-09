@@ -312,7 +312,7 @@ main {
   box-shadow: 0 0 0 4px rgba(29,185,84,0.12);
 }
 
-/* Playlist cards - stacked vertically */
+/* Playlist list */
 .playlist-section ul {
   list-style: none;
   margin: 0;
@@ -421,7 +421,7 @@ main {
   min-width: 0;
 }
 
-/* Track Selector styles */
+/* Track Selector */
 #track-selector-section {
   margin-top: 20px;
 }
@@ -444,7 +444,7 @@ main {
   margin-right: 8px;
 }
 
-/* Transfer History */
+/* History */
 .history-section {
   background: var(--card-bg);
   border-radius: var(--radius);
@@ -484,7 +484,7 @@ main {
   margin-left: auto;
 }
 
-/* Info/Privacy note */
+/* Info note */
 .info-note {
   font-size: 0.94rem;
   color: #5a6b79;
