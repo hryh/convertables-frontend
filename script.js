@@ -4,6 +4,7 @@ function getAppleDeveloperToken() {
   const meta = document.querySelector('meta[name="apple-developer-token"]');
   if (meta && meta.content) return meta.content.trim();
   if (window.APPLE_DEVELOPER_TOKEN) return String(window.APPLE_DEVELOPER_TOKEN);
+  // Fallback (replace with server-minted token in production)
   return "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjM5RDY5S0NMNjYifQ.eyJpYXQiOjE3NTM4MTE3OTgsImV4cCI6MTc2OTM2Mzc5OCwiaXNzIjoiRzRTM1dWMzhUOCJ9.BABfEbHEcTGr_odCIhduIeiO3RBSGP1Wkqgp52PTEziNMQ4deTi_p-Rm_m5oj3e7vYx5PdqonFUg8urUIGFVUQ";
 }
 
@@ -12,29 +13,19 @@ function configureMusicKitIfAvailable() {
     try {
       MusicKit.configure({
         developerToken: getAppleDeveloperToken(),
-        app: { name: "Convertables", build: "1.1.1" }
+        app: { name: "Convertables", build: "1.1.2" }
       });
       window.music = MusicKit.getInstance();
-      console.log("[MusicKit] configured");
+      // console.log("[MusicKit] configured");
     } catch (e) {
       console.warn("[MusicKit] configure error", e);
     }
-  } else {
-    console.log("[MusicKit] not yet available");
   }
 }
 
-// Wait for DOM and MusicKit
-document.addEventListener("DOMContentLoaded", () => {
-  configureMusicKitIfAvailable();
-});
-window.addEventListener("musickitloaded", () => {
-  console.log("[MusicKit] musickitloaded event");
-  configureMusicKitIfAvailable();
-});
-// ========== END APPLE MUSICKIT JS INTEGRATION ==========
+window.addEventListener("musickitloaded", configureMusicKitIfAvailable);
 
-// ========== PROGRESS BAR UTILS ==========
+// ========== PROGRESS / STATUS UTILS ==========
 function showProgress(percent, label) {
   const pc = document.getElementById('progress-container');
   const pb = document.getElementById('progress-bar');
@@ -49,9 +40,6 @@ function hideProgress() {
   const pc = document.getElementById('progress-container');
   if (pc) pc.style.display = 'none';
 }
-// ========== END PROGRESS BAR UTILS ==========
-
-// ========== BUTTON/STATE UTILS ==========
 function disableActions(disabled) {
   ["spotify-login-btn", "apple-music-login-btn", "transfer-btn"].forEach(id => {
     const btn = document.getElementById(id);
@@ -73,22 +61,38 @@ function showError(message) {
 }
 function setLoading(isLoading) {
   const loadingIndicator = document.getElementById("loading-indicator");
-  if (loadingIndicator) {
-    loadingIndicator.style.display = isLoading ? "block" : "none";
-  }
+  if (loadingIndicator) loadingIndicator.style.display = isLoading ? "block" : "none";
 }
-// ========== END BUTTON/STATE UTILS ==========
+function debounce(fn, wait) {
+  let t;
+  return function (...args) {
+    clearTimeout(t);
+    t = setTimeout(() => fn.apply(this, args), wait);
+  };
+}
+function escapeHtml(str) {
+  return String(str)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
 
 // ========== GLOBALS ==========
 const CLIENT_ID = "ed6e006e361743a38c5b94660298ce7a";
-const REDIRECT_URI = "https://convertables.xyz"; // Must exactly match your Spotify app settings
+const REDIRECT_URI = "https://convertables.xyz"; // Must match your Spotify app
 const SCOPES = "playlist-read-private playlist-read-collaborative";
 
 let selectedPlaylist = null;
 let selectedTracksForTransfer = [];
-let currentPlaylists = [];
+let currentPlaylistsCache = [];
 
-// Stepper handling
+// ========== STEPPER ==========
+function isTokenExpired() {
+  const expiryTime = localStorage.getItem("spotifyTokenExpiry");
+  return !expiryTime || Date.now() > parseInt(expiryTime, 10);
+}
 function updateStepper() {
   const spotifyToken = localStorage.getItem("spotifyAccessToken");
   const spotifyConnected = Boolean(spotifyToken) && !isTokenExpired();
@@ -109,27 +113,20 @@ function updateStepper() {
   });
 
   const transferBtn = document.getElementById("transfer-btn");
-  if (transferBtn) {
-    transferBtn.disabled = !(spotifyConnected && hasSelection && appleConnected);
-  }
+  if (transferBtn) transferBtn.disabled = !(spotifyConnected && hasSelection && appleConnected);
 }
 
 // ========== SPOTIFY AUTH ==========
 function getSpotifyAuthURL() {
-  return `https://accounts.spotify.com/authorize?response_type=code&client_id=${CLIENT_ID}&scope=${encodeURIComponent(
-    SCOPES
-  )}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
+  return `https://accounts.spotify.com/authorize?response_type=code&client_id=${CLIENT_ID}&scope=${encodeURIComponent(SCOPES)}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
 }
 function getAuthorizationCode() {
   const urlParams = new URLSearchParams(window.location.search);
   return urlParams.get("code");
 }
-function isTokenExpired() {
-  const expiryTime = localStorage.getItem("spotifyTokenExpiry");
-  return !expiryTime || Date.now() > parseInt(expiryTime, 10);
-}
 async function refreshAccessToken() {
   const refreshToken = localStorage.getItem("spotifyRefreshToken");
+  if (!refreshToken) return null;
   try {
     const response = await fetch("/api/spotify/refresh", {
       method: "POST",
@@ -143,8 +140,7 @@ async function refreshAccessToken() {
       return data.access_token;
     }
     return null;
-  } catch (e) {
-    console.error("refreshAccessToken error", e);
+  } catch {
     return null;
   }
 }
@@ -163,8 +159,7 @@ async function fetchAccessToken(authCode) {
       return data.access_token;
     }
     return null;
-  } catch (e) {
-    console.error("fetchAccessToken error", e);
+  } catch {
     return null;
   }
 }
@@ -187,8 +182,7 @@ async function fetchPlaylists(accessToken) {
       url = data.next;
     }
     return items;
-  } catch (error) {
-    console.error("fetchPlaylists error", error);
+  } catch {
     showError("An error occurred while fetching playlists.");
     return [];
   } finally {
@@ -196,52 +190,10 @@ async function fetchPlaylists(accessToken) {
   }
 }
 
-// ========== DOM READY: ATTACH BUTTON LISTENERS ==========
-document.addEventListener("DOMContentLoaded", () => {
-  const spotifyBtn = document.getElementById("spotify-login-btn");
-  const appleBtn = document.getElementById("apple-music-login-btn");
-
-  if (spotifyBtn) {
-    spotifyBtn.addEventListener("click", () => {
-      try {
-        const url = getSpotifyAuthURL();
-        console.log("[Spotify] redirecting to", url);
-        window.location.assign(url);
-      } catch (e) {
-        console.error("Spotify login click error", e);
-        showError("Could not start Spotify login. Please refresh and try again.");
-      }
-    });
-  }
-
-  if (appleBtn) {
-    appleBtn.addEventListener("click", async () => {
-      try {
-        if (!(window.music && typeof window.music.authorize === "function")) {
-          showError("Apple Music is still loading. Please wait a second and try again.");
-          return;
-        }
-        await window.music.authorize();
-        appleBtn.classList.add("connected");
-        appleBtn.textContent = "Apple Music Connected ✓";
-        setStatus("Apple Music connected! Select your Spotify playlist and click Transfer.");
-        updateStepper();
-      } catch (e) {
-        console.error("Apple authorize error", e);
-        showError("Apple Music login failed. Please try again.");
-      }
-    });
-  }
-
-  // Begin auth flow for Spotify immediately (handles redirect back)
-  handleSpotifyAuth();
-});
-
-// ========== PLAYLIST RENDERING & SEARCH ==========
+// ========== RENDERING PLAYLISTS & SEARCH ==========
 const playlistContainer = document.getElementById("playlist-container");
 const playlistSearch = document.getElementById("playlist-search");
 
-let currentPlaylistsCache = [];
 function renderPlaylists(playlists) {
   currentPlaylistsCache = playlists.slice().sort((a, b) => a.name.localeCompare(b.name));
   renderFilteredPlaylists("");
@@ -282,12 +234,11 @@ function renderFilteredPlaylists(query) {
     const count = document.createElement("p");
     count.className = "playlist-count";
     count.textContent = `${p.tracks?.total ?? "?"} tracks`;
-
     info.appendChild(title);
     info.appendChild(count);
 
     const sel = document.createElement("div");
-    sel.innerHTML = "Choose";
+    sel.textContent = "Choose";
     sel.style.color = "#16763b";
     sel.style.fontWeight = "600";
 
@@ -317,7 +268,6 @@ function renderFilteredPlaylists(query) {
 
     ul.appendChild(li);
   });
-
   playlistContainer.appendChild(ul);
 }
 if (playlistSearch) {
@@ -342,7 +292,7 @@ async function fetchAndShowTracksForPartialTransfer(playlistId, playlistName) {
   list.innerHTML = tracks.map((t, i) =>
     `<li>
       <label>
-        <input type="checkbox" class="track-box" checked data-index="${i}" />
+        <input type="checkbox" class="track-box" checked data-index="${i}">
         ${escapeHtml(t.name)} — ${escapeHtml(t.artist)}
       </label>
     </li>`
@@ -351,7 +301,7 @@ async function fetchAndShowTracksForPartialTransfer(playlistId, playlistName) {
   const selectAll = document.getElementById('select-all');
   selectAll.checked = true;
   selectAll.onchange = function () {
-    document.querySelectorAll('.track-box').forEach(box => box.checked = this.checked);
+    document.querySelectorAll('.track-box').forEach(box => { box.checked = this.checked; });
   };
   list.onchange = function () {
     const boxes = document.querySelectorAll('.track-box');
@@ -360,10 +310,11 @@ async function fetchAndShowTracksForPartialTransfer(playlistId, playlistName) {
 
   selectedTracksForTransfer = tracks;
 }
+
 async function getAllSpotifyTracksDetailed(playlistId) {
   let tracks = [];
   let url = `https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=100`;
-  let accessToken = localStorage.getItem("spotifyAccessToken");
+  const accessToken = localStorage.getItem("spotifyAccessToken");
   while (url) {
     const res = await fetch(url, { headers: { Authorization: `Bearer ${accessToken}` } });
     if (!res.ok) break;
@@ -381,163 +332,7 @@ async function getAllSpotifyTracksDetailed(playlistId) {
   return tracks;
 }
 
-// ========== INITIAL AUTH HANDLING ==========
-async function handleSpotifyAuth() {
-  try {
-    const authCode = getAuthorizationCode();
-    if (authCode) {
-      const accessToken = await fetchAccessToken(authCode);
-      if (accessToken) {
-        const playlists = await fetchPlaylists(accessToken);
-        renderPlaylists(playlists);
-        const url = new URL(window.location);
-        url.searchParams.delete("code");
-        window.history.replaceState({}, document.title, url.pathname);
-      } else {
-        showError("Failed to retrieve access token. Please log in again.");
-      }
-    } else if (isTokenExpired()) {
-      const refreshedToken = await refreshAccessToken();
-      if (refreshedToken) {
-        const playlists = await fetchPlaylists(refreshedToken);
-        renderPlaylists(playlists);
-      } else {
-        setStatus("Please log in to Spotify to load your playlists.");
-      }
-    } else {
-      const validToken = localStorage.getItem("spotifyAccessToken");
-      if (validToken) {
-        const playlists = await fetchPlaylists(validToken);
-        renderPlaylists(playlists);
-      } else {
-        setStatus("Please log in to Spotify to load your playlists.");
-      }
-    }
-  } catch (e) {
-    console.error("handleSpotifyAuth error", e);
-  } finally {
-    updateStepper();
-  }
-}
-
 // ========== TRANSFER ==========
-document.addEventListener("DOMContentLoaded", () => {
-  const transferBtn = document.getElementById("transfer-btn");
-  if (!transferBtn) return;
-
-  transferBtn.addEventListener("click", async () => {
-    if (!selectedPlaylist) {
-      showError("Please select a Spotify playlist first.");
-      return;
-    }
-    if (!(window.music && window.music.isAuthorized)) {
-      showError("Please connect your Apple Music account first.");
-      updateStepper();
-      return;
-    }
-
-    setLoading(true);
-    disableActions(true);
-
-    const checkboxes = Array.from(document.querySelectorAll('.track-box'));
-    let tracks = [];
-    if (checkboxes.length) {
-      checkboxes.forEach((box) => {
-        const idx = Number(box.getAttribute("data-index"));
-        if (box.checked) tracks.push(selectedTracksForTransfer[idx]);
-      });
-    } else {
-      tracks = selectedTracksForTransfer;
-    }
-    if (!tracks.length) {
-      showError("No tracks selected. Please select at least one track.");
-      setLoading(false);
-      disableActions(false);
-      return;
-    }
-
-    showProgress(8, `Found ${tracks.length} selected tracks. Searching on Apple Music...`);
-
-    try {
-      const storefront = window.music?.storefrontId || "us";
-      const appleMusicTrackIds = [];
-      let foundCount = 0;
-
-      for (let i = 0; i < tracks.length; i++) {
-        const id = await searchAppleMusicTrack(tracks[i], storefront);
-        if (id) foundCount++;
-        appleMusicTrackIds.push(id);
-        if ((i + 1) % 5 === 0 || i === tracks.length - 1) {
-          const pct = 8 + Math.floor(70 * ((i + 1) / tracks.length));
-          showProgress(pct, `Matching tracks... (${i + 1}/${tracks.length})`);
-        }
-      }
-      const matchedIds = appleMusicTrackIds.filter(Boolean);
-      if (!matchedIds.length) {
-        showError("No matching tracks found on Apple Music.");
-        setLoading(false);
-        hideProgress();
-        disableActions(false);
-        return;
-      }
-
-      showProgress(85, "Creating playlist on Apple Music...");
-      const applePlaylistId = await createAppleMusicPlaylist(
-        selectedPlaylist.name,
-        selectedPlaylist.description || ""
-      );
-      if (!applePlaylistId) {
-        showError("Failed to create Apple Music playlist.");
-        setLoading(false);
-        hideProgress();
-        disableActions(false);
-        return;
-      }
-
-      showProgress(92, "Adding tracks to Apple Music playlist...");
-      await addTracksToApplePlaylist(applePlaylistId, matchedIds);
-
-      showProgress(100, "Done!");
-      setStatus(`Transfer complete! Playlist "${selectedPlaylist.name}" created on Apple Music. Found ${foundCount}/${tracks.length} tracks.`);
-
-      const notFound = tracks.filter((t, idx) => !appleMusicTrackIds[idx]);
-      if (notFound.length > 0) {
-        let detail = "Some tracks couldn't be matched and were skipped:\n\n";
-        detail += notFound.map(t => `${t.name} — ${t.artist}`).join("\n");
-        alert(detail);
-      } else {
-        alert("Playlist transferred successfully!");
-      }
-
-      saveTransferHistory({
-        playlist: selectedPlaylist.name,
-        date: new Date().toISOString(),
-        count: tracks.length,
-        found: foundCount,
-        status: "success"
-      });
-      renderTransferHistory();
-    } catch (err) {
-      console.error("Transfer failed", err);
-      showError("Transfer failed: " + (err?.message || String(err)));
-      saveTransferHistory({
-        playlist: selectedPlaylist?.name || "(unknown)",
-        date: new Date().toISOString(),
-        count: 0,
-        found: 0,
-        status: "fail"
-      });
-      renderTransferHistory();
-    } finally {
-      setLoading(false);
-      setTimeout(hideProgress, 1500);
-      disableActions(false);
-      updateStepper();
-    }
-  });
-});
-
-// ========== HELPERS ==========
 async function searchAppleMusicTrack({ name, artist }, storefront) {
   const query = encodeURIComponent(`${name} ${artist}`.trim());
   try {
@@ -588,6 +383,8 @@ async function addTracksToApplePlaylist(playlistId, trackIds) {
     });
   }
 }
+
+// ========== HISTORY ==========
 function saveTransferHistory(entry) {
   const history = JSON.parse(localStorage.getItem('transferHistory') || '[]');
   history.unshift(entry);
@@ -614,22 +411,192 @@ function renderTransferHistory() {
 }
 renderTransferHistory();
 
-function debounce(fn, wait) {
-  let t;
-  return function (...args) {
-    clearTimeout(t);
-    t = setTimeout(() => fn.apply(this, args), wait);
-  };
-}
-function escapeHtml(str) {
-  return String(str)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-    );
+// ========== BOOT ==========
+document.addEventListener("DOMContentLoaded", () => {
+  // Make sure MusicKit is configured (in case musickitloaded fired earlier)
+  configureMusicKitIfAvailable();
+
+  // Button listeners
+  const spotifyBtn = document.getElementById("spotify-login-btn");
+  const appleBtn = document.getElementById("apple-music-login-btn");
+  const transferBtn = document.getElementById("transfer-btn");
+
+  if (spotifyBtn) {
+    spotifyBtn.addEventListener("click", () => {
+      try {
+        window.location.assign(getSpotifyAuthURL());
+      } catch {
+        showError("Could not start Spotify login. Please refresh and try again.");
+      }
+    });
+  }
+  if (appleBtn) {
+    appleBtn.addEventListener("click", async () => {
+      try {
+        if (!(window.music && typeof window.music.authorize === "function")) {
+          showError("Apple Music is still loading. Please wait a moment and try again.");
+          return;
+        }
+        await window.music.authorize();
+        appleBtn.classList.add("connected");
+        appleBtn.textContent = "Apple Music Connected ✓";
+        setStatus("Apple Music connected! Select your Spotify playlist and click Transfer.");
+        updateStepper();
+      } catch {
+        showError("Apple Music login failed. Please try again.");
+      }
+    });
+  }
+  if (transferBtn) {
+    transferBtn.addEventListener("click", async () => {
+      if (!selectedPlaylist) {
+        showError("Please select a Spotify playlist first.");
+        return;
+      }
+      if (!(window.music && window.music.isAuthorized)) {
+        showError("Please connect your Apple Music account first.");
+        updateStepper();
+        return;
+      }
+
+      setLoading(true);
+      disableActions(true);
+
+      // Gather selected tracks
+      const checkboxes = Array.from(document.querySelectorAll('.track-box'));
+      let tracks = [];
+      if (checkboxes.length) {
+        checkboxes.forEach((box) => {
+          const idx = Number(box.getAttribute("data-index"));
+          if (box.checked) tracks.push(selectedTracksForTransfer[idx]);
+        });
+      } else {
+        tracks = selectedTracksForTransfer;
+      }
+      if (!tracks.length) {
+        showError("No tracks selected. Please select at least one track.");
+        setLoading(false);
+        disableActions(false);
+        return;
+      }
+
+      showProgress(8, `Found ${tracks.length} selected tracks. Searching on Apple Music...`);
+
+      try {
+        const storefront = window.music?.storefrontId || "us";
+        const appleMusicTrackIds = [];
+        let foundCount = 0;
+
+        for (let i = 0; i < tracks.length; i++) {
+          const id = await searchAppleMusicTrack(tracks[i], storefront);
+          if (id) foundCount++;
+          appleMusicTrackIds.push(id);
+          if ((i + 1) % 5 === 0 || i === tracks.length - 1) {
+            const pct = 8 + Math.floor(70 * ((i + 1) / tracks.length));
+            showProgress(pct, `Matching tracks... (${i + 1}/${tracks.length})`);
+          }
+        }
+        const matchedIds = appleMusicTrackIds.filter(Boolean);
+        if (!matchedIds.length) {
+          showError("No matching tracks found on Apple Music.");
+          setLoading(false);
+          hideProgress();
+          disableActions(false);
+          return;
+        }
+
+        showProgress(85, "Creating playlist on Apple Music...");
+        const applePlaylistId = await createAppleMusicPlaylist(
+          selectedPlaylist.name,
+          selectedPlaylist.description || ""
+        );
+        if (!applePlaylistId) {
+          showError("Failed to create Apple Music playlist.");
+          setLoading(false);
+          hideProgress();
+          disableActions(false);
+          return;
+        }
+
+        showProgress(92, "Adding tracks to Apple Music playlist...");
+        await addTracksToApplePlaylist(applePlaylistId, matchedIds);
+
+        showProgress(100, "Done!");
+        setStatus(`Transfer complete! Playlist "${selectedPlaylist.name}" created on Apple Music. Found ${foundCount}/${tracks.length} tracks.`);
+
+        const notFound = tracks.filter((t, idx) => !appleMusicTrackIds[idx]);
+        if (notFound.length > 0) {
+          let detail = "Some tracks couldn't be matched and were skipped:\n\n";
+          detail += notFound.map(t => `${t.name} — ${t.artist}`).join("\n");
+          alert(detail);
+        } else {
+          alert("Playlist transferred successfully!");
+        }
+
+        saveTransferHistory({
+          playlist: selectedPlaylist.name,
+          date: new Date().toISOString(),
+          count: tracks.length,
+          found: foundCount,
+          status: "success"
+        });
+        renderTransferHistory();
+      } catch (err) {
+        showError("Transfer failed: " + (err?.message || String(err)));
+        saveTransferHistory({
+          playlist: selectedPlaylist?.name || "(unknown)",
+          date: new Date().toISOString(),
+          count: 0,
+          found: 0,
+          status: "fail"
+        });
+        renderTransferHistory();
+      } finally {
+        setLoading(false);
+        setTimeout(hideProgress, 1500);
+        disableActions(false);
+        updateStepper();
+      }
+    });
+  }
+
+  // Handle Spotify auth on load
+  (async function handleSpotifyAuth() {
+    try {
+      const authCode = getAuthorizationCode();
+      if (authCode) {
+        const accessToken = await fetchAccessToken(authCode);
+        if (accessToken) {
+          const playlists = await fetchPlaylists(accessToken);
+          renderPlaylists(playlists);
+          const url = new URL(window.location);
+          url.searchParams.delete("code");
+          window.history.replaceState({}, document.title, url.pathname);
+        } else {
+          showError("Failed to retrieve access token. Please log in again.");
+        }
+      } else if (isTokenExpired()) {
+        const refreshedToken = await refreshAccessToken();
+        if (refreshedToken) {
+          const playlists = await fetchPlaylists(refreshedToken);
+          renderPlaylists(playlists);
+        } else {
+          setStatus("Please log in to Spotify to load your playlists.");
+        }
+      } else {
+        const validToken = localStorage.getItem("spotifyAccessToken");
+        if (validToken) {
+          const playlists = await fetchPlaylists(validToken);
+          renderPlaylists(playlists);
+        } else {
+          setStatus("Please log in to Spotify to load your playlists.");
+        }
+      }
+    } finally {
+      updateStepper();
+    }
+  })();
+});
   }
 }
 
