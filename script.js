@@ -15,7 +15,7 @@ function configureMusicKitIfAvailable() {
     try {
       MusicKit.configure({
         developerToken: getAppleDeveloperToken(),
-        app: { name: "Convertables", build: "1.1.4" }
+        app: { name: "Convertables", build: "1.1.5" }
       });
       window.music = MusicKit.getInstance();
     } catch (e) {
@@ -197,13 +197,6 @@ async function fetchPlaylists(accessToken) {
 }
 
 /* ===================== PLAYLIST RENDER & SEARCH ===================== */
-function getPlaylistContainer() {
-  return document.getElementById("playlist-container");
-}
-function getPlaylistSearch() {
-  return document.getElementById("playlist-search");
-}
-
 function renderPlaylists(playlists) {
   currentPlaylistsCache = playlists.slice().sort((a, b) => a.name.localeCompare(b.name));
   renderFilteredPlaylists("");
@@ -211,7 +204,7 @@ function renderPlaylists(playlists) {
   setStatus("Spotify connected! Select a playlist.");
 }
 function renderFilteredPlaylists(query) {
-  const playlistContainer = getPlaylistContainer();
+  const playlistContainer = document.getElementById("playlist-container");
   if (!playlistContainer) return;
   playlistContainer.innerHTML = "";
 
@@ -264,10 +257,12 @@ function renderFilteredPlaylists(query) {
       setStatus(`Selected "${p.name}". Choose tracks below, then click Transfer.`);
       updateStepper();
       const trackSection = document.getElementById("track-selector-section");
-      trackSection.style.display = "block";
-      fetchAndShowTracksForPartialTransfer(p.id, p.name).then(() => {
-        trackSection.scrollIntoView({ behavior: "smooth", block: "start" });
-      });
+      if (trackSection) {
+        trackSection.style.display = "block";
+        fetchAndShowTracksForPartialTransfer(p.id, p.name).then(() => {
+          trackSection.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+      }
     }
 
     li.addEventListener("click", select);
@@ -288,6 +283,8 @@ function renderFilteredPlaylists(query) {
 async function fetchAndShowTracksForPartialTransfer(playlistId, playlistName) {
   const section = document.getElementById("track-selector-section");
   const list = document.getElementById("track-list");
+  if (!section || !list) return;
+
   section.querySelector("h2").textContent = `Select Tracks to Transfer for "${playlistName}"`;
   list.innerHTML = "<li>Loading tracks...</li>";
   const tracks = await getAllSpotifyTracksDetailed(playlistId);
@@ -311,15 +308,19 @@ async function fetchAndShowTracksForPartialTransfer(playlistId, playlistName) {
     .join("");
 
   const selectAll = document.getElementById("select-all");
-  selectAll.checked = true;
-  selectAll.onchange = function () {
-    document.querySelectorAll(".track-box").forEach((box) => {
-      box.checked = selectAll.checked;
-    });
-  };
+  if (selectAll) {
+    selectAll.checked = true;
+    selectAll.onchange = function () {
+      document.querySelectorAll(".track-box").forEach((box) => {
+        box.checked = selectAll.checked;
+      });
+    };
+  }
   list.onchange = function () {
     const boxes = document.querySelectorAll(".track-box");
-    selectAll.checked = Array.from(boxes).every((box) => box.checked);
+    if (selectAll) {
+      selectAll.checked = Array.from(boxes).every((box) => box.checked);
+    }
   };
 
   selectedTracksForTransfer = tracks;
@@ -618,7 +619,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Search input listener
-  const searchEl = getPlaylistSearch();
+  const searchEl = document.getElementById("playlist-search");
   if (searchEl) {
     const debounced = debounce((e) => renderFilteredPlaylists(e.target.value), 160);
     searchEl.addEventListener("input", debounced);
