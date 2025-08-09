@@ -1,4 +1,6 @@
-// ========== APPLE MUSICKIT JS INTEGRATION ==========
+"use strict";
+
+/* ===================== APPLE MUSICKIT JS INTEGRATION ===================== */
 // Resolve Apple developer token: meta -> global -> fallback (rotate server-side in production)
 function getAppleDeveloperToken() {
   const meta = document.querySelector('meta[name="apple-developer-token"]');
@@ -13,35 +15,33 @@ function configureMusicKitIfAvailable() {
     try {
       MusicKit.configure({
         developerToken: getAppleDeveloperToken(),
-        app: { name: "Convertables", build: "1.1.2" }
+        app: { name: "Convertables", build: "1.1.4" }
       });
       window.music = MusicKit.getInstance();
-      // console.log("[MusicKit] configured");
     } catch (e) {
       console.warn("[MusicKit] configure error", e);
     }
   }
 }
-
 window.addEventListener("musickitloaded", configureMusicKitIfAvailable);
 
-// ========== PROGRESS / STATUS UTILS ==========
+/* ===================== UI UTILS ===================== */
 function showProgress(percent, label) {
-  const pc = document.getElementById('progress-container');
-  const pb = document.getElementById('progress-bar');
-  const pl = document.getElementById('progress-label');
+  const pc = document.getElementById("progress-container");
+  const pb = document.getElementById("progress-bar");
+  const pl = document.getElementById("progress-label");
   if (pc && pb && pl) {
-    pc.style.display = 'block';
-    pb.style.width = Math.min(100, Math.max(0, percent)) + '%';
-    pl.textContent = label || '';
+    pc.style.display = "block";
+    pb.style.width = Math.min(100, Math.max(0, percent)) + "%";
+    pl.textContent = label || "";
   }
 }
 function hideProgress() {
-  const pc = document.getElementById('progress-container');
-  if (pc) pc.style.display = 'none';
+  const pc = document.getElementById("progress-container");
+  if (pc) pc.style.display = "none";
 }
 function disableActions(disabled) {
-  ["spotify-login-btn", "apple-music-login-btn", "transfer-btn"].forEach(id => {
+  ["spotify-login-btn", "apple-music-login-btn", "transfer-btn"].forEach((id) => {
     const btn = document.getElementById(id);
     if (btn) btn.disabled = disabled;
   });
@@ -56,12 +56,16 @@ function showError(message) {
   if (errorSection && errorMessage) {
     errorMessage.textContent = message;
     errorSection.style.display = "block";
-    setTimeout(() => (errorSection.style.display = "none"), 6000);
+    setTimeout(() => {
+      errorSection.style.display = "none";
+    }, 6000);
   }
 }
 function setLoading(isLoading) {
   const loadingIndicator = document.getElementById("loading-indicator");
-  if (loadingIndicator) loadingIndicator.style.display = isLoading ? "block" : "none";
+  if (loadingIndicator) {
+    loadingIndicator.style.display = isLoading ? "block" : "none";
+  }
 }
 function debounce(fn, wait) {
   let t;
@@ -79,7 +83,7 @@ function escapeHtml(str) {
     .replaceAll("'", "&#039;");
 }
 
-// ========== GLOBALS ==========
+/* ===================== GLOBALS ===================== */
 const CLIENT_ID = "ed6e006e361743a38c5b94660298ce7a";
 const REDIRECT_URI = "https://convertables.xyz"; // Must match your Spotify app
 const SCOPES = "playlist-read-private playlist-read-collaborative";
@@ -88,7 +92,7 @@ let selectedPlaylist = null;
 let selectedTracksForTransfer = [];
 let currentPlaylistsCache = [];
 
-// ========== STEPPER ==========
+/* ===================== STEPPER ===================== */
 function isTokenExpired() {
   const expiryTime = localStorage.getItem("spotifyTokenExpiry");
   return !expiryTime || Date.now() > parseInt(expiryTime, 10);
@@ -105,7 +109,7 @@ function updateStepper() {
     { id: "step-3", done: appleConnected, active: hasSelection && !appleConnected },
     { id: "step-4", done: false, active: spotifyConnected && hasSelection && appleConnected }
   ];
-  steps.forEach(s => {
+  steps.forEach((s) => {
     const el = document.getElementById(s.id);
     if (!el) return;
     el.classList.toggle("done", s.done);
@@ -116,9 +120,11 @@ function updateStepper() {
   if (transferBtn) transferBtn.disabled = !(spotifyConnected && hasSelection && appleConnected);
 }
 
-// ========== SPOTIFY AUTH ==========
+/* ===================== SPOTIFY AUTH ===================== */
 function getSpotifyAuthURL() {
-  return `https://accounts.spotify.com/authorize?response_type=code&client_id=${CLIENT_ID}&scope=${encodeURIComponent(SCOPES)}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
+  return `https://accounts.spotify.com/authorize?response_type=code&client_id=${CLIENT_ID}&scope=${encodeURIComponent(
+    SCOPES
+  )}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
 }
 function getAuthorizationCode() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -131,7 +137,7 @@ async function refreshAccessToken() {
     const response = await fetch("/api/spotify/refresh", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ refresh_token: refreshToken }),
+      body: JSON.stringify({ refresh_token: refreshToken })
     });
     const data = await response.json();
     if (data.access_token) {
@@ -149,7 +155,7 @@ async function fetchAccessToken(authCode) {
     const response = await fetch("/api/spotify/token", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code: authCode }),
+      body: JSON.stringify({ code: authCode })
     });
     const data = await response.json();
     if (data.access_token) {
@@ -170,7 +176,7 @@ async function fetchPlaylists(accessToken) {
     let url = "https://api.spotify.com/v1/me/playlists?limit=50";
     while (url) {
       const response = await fetch(url, {
-        headers: { Authorization: `Bearer ${accessToken}` },
+        headers: { Authorization: `Bearer ${accessToken}` }
       });
       if (!response.ok) {
         const text = await response.text();
@@ -190,9 +196,13 @@ async function fetchPlaylists(accessToken) {
   }
 }
 
-// ========== RENDERING PLAYLISTS & SEARCH ==========
-const playlistContainer = document.getElementById("playlist-container");
-const playlistSearch = document.getElementById("playlist-search");
+/* ===================== PLAYLIST RENDER & SEARCH ===================== */
+function getPlaylistContainer() {
+  return document.getElementById("playlist-container");
+}
+function getPlaylistSearch() {
+  return document.getElementById("playlist-search");
+}
 
 function renderPlaylists(playlists) {
   currentPlaylistsCache = playlists.slice().sort((a, b) => a.name.localeCompare(b.name));
@@ -201,12 +211,13 @@ function renderPlaylists(playlists) {
   setStatus("Spotify connected! Select a playlist.");
 }
 function renderFilteredPlaylists(query) {
+  const playlistContainer = getPlaylistContainer();
   if (!playlistContainer) return;
   playlistContainer.innerHTML = "";
 
   const q = (query || "").toLowerCase().trim();
   const list = q
-    ? currentPlaylistsCache.filter(p => (p.name || "").toLowerCase().includes(q))
+    ? currentPlaylistsCache.filter((p) => (p.name || "").toLowerCase().includes(q))
     : currentPlaylistsCache;
 
   if (!list.length) {
@@ -247,14 +258,15 @@ function renderFilteredPlaylists(query) {
     li.appendChild(sel);
 
     function select() {
-      document.querySelectorAll(".playlist-card.selected").forEach(el => el.classList.remove("selected"));
+      document.querySelectorAll(".playlist-card.selected").forEach((el) => el.classList.remove("selected"));
       li.classList.add("selected");
       selectedPlaylist = p;
       setStatus(`Selected "${p.name}". Choose tracks below, then click Transfer.`);
       updateStepper();
-      document.getElementById('track-selector-section').style.display = 'block';
+      const trackSection = document.getElementById("track-selector-section");
+      trackSection.style.display = "block";
       fetchAndShowTracksForPartialTransfer(p.id, p.name).then(() => {
-        document.getElementById('track-selector-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        trackSection.scrollIntoView({ behavior: "smooth", block: "start" });
       });
     }
 
@@ -268,44 +280,46 @@ function renderFilteredPlaylists(query) {
 
     ul.appendChild(li);
   });
+
   playlistContainer.appendChild(ul);
 }
-if (playlistSearch) {
-  const debounced = debounce((e) => renderFilteredPlaylists(e.target.value), 160);
-  playlistSearch.addEventListener("input", debounced);
-}
 
-// ========== TRACKS ==========
+/* ===================== TRACKS ===================== */
 async function fetchAndShowTracksForPartialTransfer(playlistId, playlistName) {
-  const section = document.getElementById('track-selector-section');
-  const list = document.getElementById('track-list');
-  section.querySelector('h2').textContent = `Select Tracks to Transfer for "${playlistName}"`;
-  list.innerHTML = '<li>Loading tracks...</li>';
+  const section = document.getElementById("track-selector-section");
+  const list = document.getElementById("track-list");
+  section.querySelector("h2").textContent = `Select Tracks to Transfer for "${playlistName}"`;
+  list.innerHTML = "<li>Loading tracks...</li>";
   const tracks = await getAllSpotifyTracksDetailed(playlistId);
 
   if (!tracks.length) {
-    list.innerHTML = '<li>No tracks found in this playlist.</li>';
+    list.innerHTML = "<li>No tracks found in this playlist.</li>";
     selectedTracksForTransfer = [];
     return;
   }
 
-  list.innerHTML = tracks.map((t, i) =>
-    `<li>
-      <label>
-        <input type="checkbox" class="track-box" checked data-index="${i}">
-        ${escapeHtml(t.name)} — ${escapeHtml(t.artist)}
-      </label>
-    </li>`
-  ).join('');
+  list.innerHTML = tracks
+    .map(
+      (t, i) =>
+        `<li>
+          <label>
+            <input type="checkbox" class="track-box" checked data-index="${i}">
+            ${escapeHtml(t.name)} — ${escapeHtml(t.artist)}
+          </label>
+        </li>`
+    )
+    .join("");
 
-  const selectAll = document.getElementById('select-all');
+  const selectAll = document.getElementById("select-all");
   selectAll.checked = true;
   selectAll.onchange = function () {
-    document.querySelectorAll('.track-box').forEach(box => { box.checked = this.checked; });
+    document.querySelectorAll(".track-box").forEach((box) => {
+      box.checked = selectAll.checked;
+    });
   };
   list.onchange = function () {
-    const boxes = document.querySelectorAll('.track-box');
-    selectAll.checked = Array.from(boxes).every(box => box.checked);
+    const boxes = document.querySelectorAll(".track-box");
+    selectAll.checked = Array.from(boxes).every((box) => box.checked);
   };
 
   selectedTracksForTransfer = tracks;
@@ -319,20 +333,19 @@ async function getAllSpotifyTracksDetailed(playlistId) {
     const res = await fetch(url, { headers: { Authorization: `Bearer ${accessToken}` } });
     if (!res.ok) break;
     const data = await res.json();
-    tracks = tracks.concat(
-      data.items
-        .filter(item => item && item.track && !item.is_local)
-        .map(item => ({
-          name: item.track.name,
-          artist: item.track.artists?.[0]?.name || ""
-        }))
-    );
+    const batch = (data.items || [])
+      .filter((item) => item && item.track && !item.is_local)
+      .map((item) => ({
+        name: item.track.name,
+        artist: item.track.artists?.[0]?.name || ""
+      }));
+    tracks = tracks.concat(batch);
     url = data.next;
   }
   return tracks;
 }
 
-// ========== TRANSFER ==========
+/* ===================== APPLE SEARCH/CREATE ===================== */
 async function searchAppleMusicTrack({ name, artist }, storefront) {
   const query = encodeURIComponent(`${name} ${artist}`.trim());
   try {
@@ -341,7 +354,7 @@ async function searchAppleMusicTrack({ name, artist }, storefront) {
       {
         headers: {
           Authorization: `Bearer ${window.music.developerToken}`,
-          'Music-User-Token': window.music.musicUserToken
+          "Music-User-Token": window.music.musicUserToken
         }
       }
     );
@@ -358,8 +371,8 @@ async function createAppleMusicPlaylist(name, description) {
       method: "POST",
       headers: {
         Authorization: `Bearer ${window.music.developerToken}`,
-        'Music-User-Token': window.music.musicUserToken,
-        'Content-Type': 'application/json'
+        "Music-User-Token": window.music.musicUserToken,
+        "Content-Type": "application/json"
       },
       body: JSON.stringify({ attributes: { name, description } })
     });
@@ -371,49 +384,89 @@ async function createAppleMusicPlaylist(name, description) {
 }
 async function addTracksToApplePlaylist(playlistId, trackIds) {
   for (let i = 0; i < trackIds.length; i += 100) {
-    const chunk = trackIds.slice(i, i + 100).map(id => ({ id, type: "songs" }));
+    const chunk = trackIds.slice(i, i + 100).map((id) => ({ id, type: "songs" }));
     await fetch(`https://api.music.apple.com/v1/me/library/playlists/${playlistId}/tracks`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${window.music.developerToken}`,
-        'Music-User-Token': window.music.musicUserToken,
-        'Content-Type': 'application/json'
+        "Music-User-Token": window.music.musicUserToken,
+        "Content-Type": "application/json"
       },
       body: JSON.stringify({ data: chunk })
     });
   }
 }
 
-// ========== HISTORY ==========
+/* ===================== HISTORY ===================== */
 function saveTransferHistory(entry) {
-  const history = JSON.parse(localStorage.getItem('transferHistory') || '[]');
+  const history = JSON.parse(localStorage.getItem("transferHistory") || "[]");
   history.unshift(entry);
-  localStorage.setItem('transferHistory', JSON.stringify(history.slice(0, 20)));
+  localStorage.setItem("transferHistory", JSON.stringify(history.slice(0, 20)));
 }
 function renderTransferHistory() {
-  const container = document.getElementById('history-container');
-  const history = JSON.parse(localStorage.getItem('transferHistory') || '[]');
+  const container = document.getElementById("history-container");
+  const history = JSON.parse(localStorage.getItem("transferHistory") || "[]");
   if (!container) return;
   if (!history.length) {
     container.innerHTML = "<p>No transfer history yet.</p>";
     return;
   }
-  container.innerHTML = history.map(entry => `
-    <div class="history-entry">
-      <span class="history-playlist" title="${escapeHtml(entry.playlist)}">${escapeHtml(entry.playlist)}</span>
-      <span class="history-date">${entry.date.replace('T',' ').slice(0,16)}</span>
-      <span class="history-status ${entry.status}">
-        ${entry.status.charAt(0).toUpperCase() + entry.status.slice(1)}
-      </span>
-      <span>${entry.found}/${entry.count} tracks</span>
-    </div>
-  `).join('');
+  container.innerHTML = history
+    .map(
+      (entry) => `
+      <div class="history-entry">
+        <span class="history-playlist" title="${escapeHtml(entry.playlist)}">${escapeHtml(entry.playlist)}</span>
+        <span class="history-date">${entry.date.replace("T", " ").slice(0, 16)}</span>
+        <span class="history-status ${entry.status}">
+          ${entry.status.charAt(0).toUpperCase() + entry.status.slice(1)}
+        </span>
+        <span>${entry.found}/${entry.count} tracks</span>
+      </div>
+    `
+    )
+    .join("");
 }
-renderTransferHistory();
 
-// ========== BOOT ==========
+/* ===================== AUTH FLOW (ON LOAD) ===================== */
+async function handleSpotifyAuth() {
+  try {
+    const authCode = getAuthorizationCode();
+    if (authCode) {
+      const accessToken = await fetchAccessToken(authCode);
+      if (accessToken) {
+        const playlists = await fetchPlaylists(accessToken);
+        renderPlaylists(playlists);
+        const url = new URL(window.location);
+        url.searchParams.delete("code");
+        window.history.replaceState({}, document.title, url.pathname);
+      } else {
+        showError("Failed to retrieve access token. Please log in again.");
+      }
+    } else if (isTokenExpired()) {
+      const refreshedToken = await refreshAccessToken();
+      if (refreshedToken) {
+        const playlists = await fetchPlaylists(refreshedToken);
+        renderPlaylists(playlists);
+      } else {
+        setStatus("Please log in to Spotify to load your playlists.");
+      }
+    } else {
+      const validToken = localStorage.getItem("spotifyAccessToken");
+      if (validToken) {
+        const playlists = await fetchPlaylists(validToken);
+        renderPlaylists(playlists);
+      } else {
+        setStatus("Please log in to Spotify to load your playlists.");
+      }
+    }
+  } finally {
+    updateStepper();
+  }
+}
+
+/* ===================== BOOT ===================== */
 document.addEventListener("DOMContentLoaded", () => {
-  // Make sure MusicKit is configured (in case musickitloaded fired earlier)
+  // Ensure MusicKit configured (in case musickitloaded fired early)
   configureMusicKitIfAvailable();
 
   // Button listeners
@@ -430,6 +483,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+
   if (appleBtn) {
     appleBtn.addEventListener("click", async () => {
       try {
@@ -447,6 +501,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+
   if (transferBtn) {
     transferBtn.addEventListener("click", async () => {
       if (!selectedPlaylist) {
@@ -463,7 +518,7 @@ document.addEventListener("DOMContentLoaded", () => {
       disableActions(true);
 
       // Gather selected tracks
-      const checkboxes = Array.from(document.querySelectorAll('.track-box'));
+      const checkboxes = Array.from(document.querySelectorAll(".track-box"));
       let tracks = [];
       if (checkboxes.length) {
         checkboxes.forEach((box) => {
@@ -522,12 +577,14 @@ document.addEventListener("DOMContentLoaded", () => {
         await addTracksToApplePlaylist(applePlaylistId, matchedIds);
 
         showProgress(100, "Done!");
-        setStatus(`Transfer complete! Playlist "${selectedPlaylist.name}" created on Apple Music. Found ${foundCount}/${tracks.length} tracks.`);
+        setStatus(
+          `Transfer complete! Playlist "${selectedPlaylist.name}" created on Apple Music. Found ${foundCount}/${tracks.length} tracks.`
+        );
 
         const notFound = tracks.filter((t, idx) => !appleMusicTrackIds[idx]);
         if (notFound.length > 0) {
           let detail = "Some tracks couldn't be matched and were skipped:\n\n";
-          detail += notFound.map(t => `${t.name} — ${t.artist}`).join("\n");
+          detail += notFound.map((t) => `${t.name} — ${t.artist}`).join("\n");
           alert(detail);
         } else {
           alert("Playlist transferred successfully!");
@@ -560,42 +617,17 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Handle Spotify auth on load
-  (async function handleSpotifyAuth() {
-    try {
-      const authCode = getAuthorizationCode();
-      if (authCode) {
-        const accessToken = await fetchAccessToken(authCode);
-        if (accessToken) {
-          const playlists = await fetchPlaylists(accessToken);
-          renderPlaylists(playlists);
-          const url = new URL(window.location);
-          url.searchParams.delete("code");
-          window.history.replaceState({}, document.title, url.pathname);
-        } else {
-          showError("Failed to retrieve access token. Please log in again.");
-        }
-      } else if (isTokenExpired()) {
-        const refreshedToken = await refreshAccessToken();
-        if (refreshedToken) {
-          const playlists = await fetchPlaylists(refreshedToken);
-          renderPlaylists(playlists);
-        } else {
-          setStatus("Please log in to Spotify to load your playlists.");
-        }
-      } else {
-        const validToken = localStorage.getItem("spotifyAccessToken");
-        if (validToken) {
-          const playlists = await fetchPlaylists(validToken);
-          renderPlaylists(playlists);
-        } else {
-          setStatus("Please log in to Spotify to load your playlists.");
-        }
-      }
-    } finally {
-      updateStepper();
-    }
-  })();
+  // Search input listener
+  const searchEl = getPlaylistSearch();
+  if (searchEl) {
+    const debounced = debounce((e) => renderFilteredPlaylists(e.target.value), 160);
+    searchEl.addEventListener("input", debounced);
+  }
+
+  // Start Spotify auth flow (includes redirect handling)
+  handleSpotifyAuth();
+  // Render any stored history
+  renderTransferHistory();
 });
   }
 }
