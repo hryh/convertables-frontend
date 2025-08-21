@@ -50,7 +50,7 @@
   </div>
 
   <!-- =======================
-       NEW: Spotify Access Modal (Formspree)
+       Spotify Access Modal
        ======================= -->
   <div id="spotify-access-modal" class="spotify-access-modal" style="display:none;">
     <div class="spotify-access-modal-content">
@@ -100,18 +100,22 @@
 
       <div class="stepper" aria-label="Transfer steps">
         <div class="step active" id="step-1" data-step="1">
-          Connect Spotify
-          <small>Load your playlists</small>
+          Request Spotify Access
+          <small>Get on the access list</small>
         </div>
         <div class="step" id="step-2" data-step="2">
+          Connect Spotify
+          <small>Log in & load your playlists</small>
+        </div>
+        <div class="step" id="step-3" data-step="3">
           Choose playlist
           <small>Optionally pick tracks</small>
         </div>
-        <div class="step" id="step-3" data-step="3">
+        <div class="step" id="step-4" data-step="4">
           Connect Apple Music
           <small>Authorize once</small>
         </div>
-        <div class="step" id="step-4" data-step="4">
+        <div class="step" id="step-5" data-step="5">
           Transfer
           <small>Create and fill playlist</small>
         </div>
@@ -124,23 +128,30 @@
       <div class="steps-container">
         <div class="step-box">
           <div class="step-icon">
-            <img src="images/step1.png" alt="Step 1" />
+            <img src="images/step-request.png" alt="Step 1" />
           </div>
           <h3>Step 1</h3>
+          <p>Request Spotify access to begin the transfer process.</p>
+        </div>
+        <div class="step-box">
+          <div class="step-icon">
+            <img src="images/step1.png" alt="Step 2" />
+          </div>
+          <h3>Step 2</h3>
           <p>Log in to your Spotify account and select the playlist you want to transfer.</p>
         </div>
         <div class="step-box">
           <div class="step-icon">
-            <img src="images/step2.png" alt="Step 2" />
+            <img src="images/step2.png" alt="Step 3" />
           </div>
-          <h3>Step 2</h3>
+          <h3>Step 3</h3>
           <p>Log in to your Apple Music account.</p>
         </div>
         <div class="step-box">
           <div class="step-icon">
-            <img src="images/step3.png" alt="Step 3" />
+            <img src="images/step3.png" alt="Step 4" />
           </div>
-          <h3>Step 3</h3>
+          <h3>Step 4</h3>
           <p>Click "Transfer" and let us do the rest!</p>
         </div>
       </div>
@@ -151,9 +162,7 @@
       <button id="spotify-login-btn" class="btn spotify" aria-label="Log in with Spotify">Log in with Spotify</button>
       <button id="apple-music-login-btn" class="btn apple-music" aria-label="Log in with Apple Music">Log in with Apple Music</button>
       <button id="transfer-btn" class="btn transfer" disabled aria-disabled="true">Transfer Playlist</button>
-      <!-- ====================
-           NEW: Button to open Spotify Access Modal
-           ==================== -->
+      <!-- New: Button to open Spotify Access Modal -->
       <button id="request-spotify-access-btn" class="btn transfer" type="button" style="margin-top:8px;">
         Request Spotify Access
       </button>
@@ -245,9 +254,7 @@
       document.getElementById('contact-success').style.display = 'block';
     };
 
-    // =========================
-    // NEW: Spotify Access Modal JS
-    // =========================
+    // Spotify Access Modal JS
     document.getElementById('request-spotify-access-btn').onclick = function() {
       document.getElementById('spotify-access-modal').style.display = 'flex';
       document.getElementById('spotify-access-success').style.display = 'none';
