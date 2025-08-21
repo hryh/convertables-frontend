@@ -14,21 +14,71 @@
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
   <link rel="manifest" href="/site.webmanifest" />
   <style>
-    /* ... your existing inline styles ... */
+    /* HEADER LINKS BOX - Place this in styles.css for production */
+    .header-links-box {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: #232323;
+      border-radius: 12px;
+      padding: 6px 18px;
+      margin-left: auto;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    }
+    .header-links-box a,
+    .header-links-box button {
+      color: #fff;
+      background: none;
+      border: none;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      padding: 0 5px;
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .header-links-box a:hover,
+    .header-links-box button:hover {
+      color: #1db954;
+      text-decoration: underline;
+    }
+    @media (max-width: 700px) {
+      .header-links-box {
+        padding: 4px 10px;
+        gap: 8px;
+        font-size: 0.97rem;
+      }
+    }
   </style>
 </head>
 <body>
+  <!-- Header -->
+  <header>
+    <div class="simple-header">
+      <div class="header-logos">
+        <a href="/" class="header-logo-link" title="Convertables Home">
+          <img src="images/logo.png" alt="Convertables Logo">
+        </a>
+        <a href="https://github.com/hryh/public-convertables" class="header-logo-link" title="GitHub" target="_blank" rel="noopener">
+          <img src="images/github-mark-white.png" alt="GitHub">
+        </a>
+        <a href="https://www.instagram.com/convert.ables/" class="header-logo-link" title="Instagram" target="_blank" rel="noopener">
+          <img src="images/instagram-svgrepo-com.png" alt="Instagram">
+        </a>
+      </div>
+      <span class="header-title">CONVERTABLES</span>
+      <div class="header-links-box">
+        <a href="/tos.html" target="_blank" rel="noopener">Terms of Service</a>
+        <button class="contact-btn" id="contact-support-btn" type="button">Contact / Support</button>
+      </div>
+    </div>
+  </header>
+
   <!-- Sticky Progress -->
   <div id="progress-container" role="status" aria-live="polite">
     <div><div id="progress-bar"></div></div>
     <div id="progress-label">Preparing…</div>
   </div>
-
-  <!-- Corner menu -->
-  <nav class="corner-menu" aria-label="Site quick links">
-    <a href="/tos.html" target="_blank" rel="noopener">Terms of Service</a>
-    <button class="contact-btn" id="contact-support-btn" type="button">Contact / Support</button>
-  </nav>
 
   <!-- Contact Modal -->
   <div id="contact-modal" class="contact-modal" style="display:none;">
@@ -71,24 +121,6 @@
     </div>
   </div>
   <!-- ==== End of Spotify Access Modal ==== -->
-
-  <!-- Header -->
-  <header>
-    <div class="simple-header">
-      <div class="header-logos">
-        <a href="/" class="header-logo-link" title="Convertables Home">
-          <img src="images/logo.png" alt="Convertables Logo">
-        </a>
-        <a href="https://github.com/hryh/public-convertables" class="header-logo-link" title="GitHub" target="_blank" rel="noopener">
-          <img src="images/github-mark-white.png" alt="GitHub">
-        </a>
-        <a href="https://www.instagram.com/convert.ables/" class="header-logo-link" title="Instagram" target="_blank" rel="noopener">
-          <img src="images/instagram-svgrepo-com.png" alt="Instagram">
-        </a>
-      </div>
-      <span class="header-title">CONVERTABLES</span>
-    </div>
-  </header>
 
   <main>
     <!-- Hero / Value prop + Stepper -->
