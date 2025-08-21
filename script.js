@@ -1,12 +1,10 @@
 // ========== APPLE MUSICKIT JS INTEGRATION ==========
-// Resolve Apple developer token: meta -> global -> fallback (rotate server-side in production)
 function getAppleDeveloperToken() {
   const meta = document.querySelector('meta[name="apple-developer-token"]');
   if (meta && meta.content) return meta.content.trim();
   if (window.APPLE_DEVELOPER_TOKEN) return String(window.APPLE_DEVELOPER_TOKEN);
   return "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjM5RDY5S0NMNjYifQ.eyJpYXQiOjE3NTM4MTE3OTgsImV4cCI6MTc2OTM2Mzc5OCwiaXNzIjoiRzRTM1dWMzhUOCJ9.BABfEbHEcTGr_odCIhduIeiO3RBSGP1Wkqgp52PTEziNMQ4deTi_p-Rm_m5oj3e7vYx5PdqonFUg8urUIGFVUQ";
 }
-
 function configureMusicKitIfAvailable() {
   if (typeof MusicKit !== "undefined") {
     try {
@@ -23,8 +21,6 @@ function configureMusicKitIfAvailable() {
     console.log("[MusicKit] not yet available");
   }
 }
-
-// Wait for DOM and MusicKit
 document.addEventListener("DOMContentLoaded", () => {
   configureMusicKitIfAvailable();
 });
@@ -467,10 +463,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const id = await searchAppleMusicTrack(tracks[i], storefront);
         if (id) foundCount++;
         appleMusicTrackIds.push(id);
-        if ((i + 1) % 5 === 0 || i === tracks.length - 1) {
-          const pct = 8 + Math.floor(70 * ((i + 1) / tracks.length));
-          showProgress(pct, `Matching tracks... (${i + 1}/${tracks.length})`);
-        }
+
+        // --- Progress Bar Update: Matching tracks ---
+        const pct = 8 + Math.floor(70 * ((i + 1) / tracks.length));
+        showProgress(pct, `Matching tracks... (${i + 1}/${tracks.length})`);
       }
       const matchedIds = appleMusicTrackIds.filter(Boolean);
       if (!matchedIds.length) {
