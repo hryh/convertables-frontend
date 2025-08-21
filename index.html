@@ -14,7 +14,6 @@
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
   <link rel="manifest" href="/site.webmanifest" />
   <style>
-    /* HEADER LINKS BOX - Place this in styles.css for production */
     .header-links-box {
       display: flex;
       align-items: center;
@@ -74,10 +73,12 @@
     </div>
   </header>
 
-  <!-- Sticky Progress -->
-  <div id="progress-container" role="status" aria-live="polite">
-    <div><div id="progress-bar"></div></div>
-    <div id="progress-label">Preparing…</div>
+  <!-- Sticky Progress (now hidden by default and no label) -->
+  <div id="progress-container" role="status" aria-live="polite" style="display:none;">
+    <div>
+      <div id="progress-bar"></div>
+    </div>
+    <div id="progress-label"></div>
   </div>
 
   <!-- Contact Modal -->
