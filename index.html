@@ -101,23 +101,25 @@
   </div>
 
   <!-- =======================
-       Spotify Access Modal
+       Spotify Access Modal (Google Form)
        ======================= -->
   <div id="spotify-access-modal" class="spotify-access-modal" style="display:none;">
     <div class="spotify-access-modal-content">
       <span class="spotify-access-close" id="spotify-access-close">&times;</span>
       <h2 style="margin-top:0;margin-bottom:8px;">Request Spotify Access</h2>
       <p style="margin-bottom:16px;text-align:center;">
-        To use the Spotify transfer feature, please submit your email below. We will notify you as soon as you're added.
+        To use the Spotify transfer feature, please fill out the request form below. We will notify you as soon as you're added.
       </p>
-      <form id="spotify-access-form" action="https://formspree.io/f/xjkoqdyg" method="POST" style="width:100%;max-width:400px;">
-        <label for="spotify-access-email">Your Email:</label>
-        <input type="email" id="spotify-access-email" name="email" required placeholder="you@example.com" style="width:100%;border-radius:8px;border:1px solid #ccc;padding:8px;margin-bottom:10px;">
-        <button type="submit" class="btn transfer" style="width:100%;">Request Access</button>
-      </form>
-      <div id="spotify-access-success" style="display:none; color: #1db954; margin-top:12px;">
-        Thank you! Your request has been submitted.<br>
-        We will contact you soon.
+      <div style="width:100%;max-width:400px;text-align:center;">
+        <a
+          href="https://docs.google.com/forms/d/e/1FAIpQLSfEXAMPLE123abcDEF456ghi789/viewform"
+          target="_blank"
+          rel="noopener"
+          class="btn transfer"
+          style="width:100%;display:inline-block;margin:16px 0 0 0;"
+        >
+          Open Spotify Access Request Form
+        </a>
       </div>
     </div>
   </div>
@@ -274,34 +276,14 @@
       document.getElementById('contact-success').style.display = 'block';
     };
 
-    // Spotify Access Modal JS
+    // Spotify Access Modal JS (Google Form)
     document.getElementById('request-spotify-access-btn').onclick = function() {
       document.getElementById('spotify-access-modal').style.display = 'flex';
-      document.getElementById('spotify-access-success').style.display = 'none';
-      document.getElementById('spotify-access-form').style.display = 'block';
-      document.getElementById('spotify-access-form').reset();
     };
     document.getElementById('spotify-access-close').onclick = function() {
       document.getElementById('spotify-access-modal').style.display = 'none';
     };
-    document.getElementById('spotify-access-form').onsubmit = async function(e) {
-      e.preventDefault();
-      var form = this;
-      var data = new FormData(form);
-      var xhr = new XMLHttpRequest();
-      xhr.open(form.method, form.action);
-      xhr.setRequestHeader('Accept', 'application/json');
-      xhr.onreadystatechange = function() {
-        if (xhr.readyState !== XMLHttpRequest.DONE) return;
-        if (xhr.status === 200) {
-          form.style.display = 'none';
-          document.getElementById('spotify-access-success').style.display = 'block';
-        } else {
-          alert('There was a problem submitting your request. Please try again.');
-        }
-      };
-      xhr.send(data);
-    };
+    // window.onclick already handles modal background close
   </script>
 </body>
 </html>
