@@ -48,6 +48,56 @@
         font-size: 0.97rem;
       }
     }
+    /* Modal overlay styles for both modals */
+    .contact-modal,
+    .spotify-access-modal {
+      position: fixed;
+      z-index: 1001;
+      left: 0; top: 0; right: 0; bottom: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.50);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      overflow: auto;
+    }
+    .contact-modal-content,
+    .spotify-access-modal-content {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 6px 24px rgba(0,0,0,.18);
+      padding: 32px 22px 22px 22px;
+      position: relative;
+      margin: 30px 10px;
+      max-width: 480px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .spotify-access-modal-content {
+      max-width: 700px;
+    }
+    .contact-close,
+    .spotify-access-close {
+      position: absolute;
+      right: 20px;
+      top: 18px;
+      font-size: 26px;
+      color: #555;
+      cursor: pointer;
+      font-weight: bold;
+      transition: color 0.2s;
+      z-index: 10;
+    }
+    .contact-close:hover,
+    .spotify-access-close:hover {
+      color: #b00020;
+    }
+    @media (max-width: 700px) {
+      .spotify-access-modal-content {
+        max-width: 98vw;
+        padding: 14px 2vw 10px 2vw;
+      }
+    }
   </style>
 </head>
 <body>
@@ -101,7 +151,7 @@
   </div>
 
   <!-- =======================
-       Spotify Access Modal (Google Form)
+       Spotify Access Modal (Google Form Embedded)
        ======================= -->
   <div id="spotify-access-modal" class="spotify-access-modal" style="display:none;">
     <div class="spotify-access-modal-content">
@@ -110,16 +160,17 @@
       <p style="margin-bottom:16px;text-align:center;">
         To use the Spotify transfer feature, please fill out the request form below. We will notify you as soon as you're added.
       </p>
-      <div style="width:100%;max-width:400px;text-align:center;">
-        <a
-          href="https://docs.google.com/forms/d/e/1FAIpQLSfEXAMPLE123abcDEF456ghi789/viewform"
-          target="_blank"
-          rel="noopener"
-          class="btn transfer"
-          style="width:100%;display:inline-block;margin:16px 0 0 0;"
-        >
-          Open Spotify Access Request Form
-        </a>
+      <div style="width:100%;max-width:640px;margin:0 auto;">
+        <iframe 
+          src="https://docs.google.com/forms/d/e/1FAIpQLSdNUOPTz-mX8BQs5CLsl9viYnwbeipXy2Efmv19DR3kkfQTKA/viewform?embedded=true"
+          width="100%" 
+          height="480" 
+          frameborder="0" 
+          marginheight="0" 
+          marginwidth="0"
+          style="border:none;background:#fff;border-radius:10px;"
+          allowfullscreen
+        >Loading…</iframe>
       </div>
     </div>
   </div>
@@ -276,7 +327,7 @@
       document.getElementById('contact-success').style.display = 'block';
     };
 
-    // Spotify Access Modal JS (Google Form)
+    // Spotify Access Modal JS (embedded Google Form)
     document.getElementById('request-spotify-access-btn').onclick = function() {
       document.getElementById('spotify-access-modal').style.display = 'flex';
     };
